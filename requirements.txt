@@ -1,0 +1,10 @@
+PyQt6
+pyaudio
+webrtcvad
+vosk
+pyttsx3
+together==1.2.0
+opencv-python
+numpy
+python-dotenv
+requests

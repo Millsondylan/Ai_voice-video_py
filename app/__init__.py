@@ -1,0 +1,2 @@
+"""Glasses desktop assistant package."""
+
