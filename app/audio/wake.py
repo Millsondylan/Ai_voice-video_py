@@ -11,25 +11,27 @@ from .stt import StreamingTranscriber
 
 
 class WakeWordListener(threading.Thread):
-    """Continuously listens for a wake word phrase and invokes a callback."""
+    """Continuously listens for wake variants on a raw PCM stream (no VAD)."""
 
     def __init__(
         self,
-        wake_word: str,
+        wake_variants: list[str],
         on_detect: Callable[[], None],
         transcriber: StreamingTranscriber,
         sample_rate: int = 16000,
-        frame_duration_ms: int = 20,
+        chunk_samples: int = 320,
         debounce_ms: int = 700,
+        mic_device_name: str | None = None,
     ) -> None:
         super().__init__(daemon=True)
-        self.wake_word = wake_word.lower()
+        self._wake_variants = [variant.lower() for variant in wake_variants if variant]
         self._on_detect = on_detect
         self._transcriber = transcriber
         self._sample_rate = sample_rate
-        self._frame_duration_ms = frame_duration_ms
+        self._chunk_samples = chunk_samples
         self._debounce_ms = debounce_ms
-        self._last_trigger_time: float = 0
+        self._mic_device_name = mic_device_name
+        self._last_trigger_time: float = 0.0
         self._stop_event = threading.Event()
 
     def stop(self) -> None:
@@ -40,21 +42,30 @@ class WakeWordListener(threading.Thread):
         logger = get_event_logger()
         try:
             while not self._stop_event.is_set():
-                with MicrophoneStream(rate=self._sample_rate, frame_duration_ms=self._frame_duration_ms) as mic:
-                    self._transcriber.reset()
+                with MicrophoneStream(
+                    rate=self._sample_rate,
+                    chunk_samples=self._chunk_samples,
+                    input_device_name=self._mic_device_name,
+                ) as mic:
+                    self._transcriber.start()
                     while not self._stop_event.is_set():
-                        frame = mic.read()
-                        # Process ALL frames (no VAD filtering) for lowest latency
-                        result = self._transcriber.accept_audio(frame)
-                        transcript_lower = f"{self._transcriber.transcript} {result.text}".lower()
-                        if self.wake_word in transcript_lower:
-                            # Debounce: prevent rapid re-triggers
-                            now = time.time()
-                            if (now - self._last_trigger_time) * 1000 >= self._debounce_ms:
-                                self._last_trigger_time = now
+                        frame = mic.read(self._chunk_samples)
+                        self._transcriber.feed(frame)
+                        text = self._transcriber.combined_text.lower()
+                        if self._matches_variant(text):
+                            if self._should_trigger():
                                 logger.log_wake_detected()
                                 self._on_detect()
                                 return
         except Exception as exc:  # pragma: no cover
             print(f"[WakeWordListener] error: {exc}")
 
+    def _matches_variant(self, text: str) -> bool:
+        return any(variant in text for variant in self._wake_variants)
+
+    def _should_trigger(self) -> bool:
+        now = time.time()
+        if (now - self._last_trigger_time) * 1000 >= self._debounce_ms:
+            self._last_trigger_time = now
+            return True
+        return False

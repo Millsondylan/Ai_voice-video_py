@@ -100,10 +100,15 @@ class GlassesWindow(QtWidgets.QMainWindow):
             self.error_occurred.emit(str(exc))
             return
 
+        variants = list({v.lower(): v for v in ([self.config.wake_word] + self.config.wake_variants)}.values())
         listener = WakeWordListener(
-            wake_word=self.config.wake_word,
+            wake_variants=variants,
             on_detect=_on_detect,
             transcriber=self._wake_transcriber,
+            sample_rate=self.config.sample_rate_hz,
+            chunk_samples=self.config.chunk_samples,
+            debounce_ms=700,
+            mic_device_name=self.config.mic_device_name,
         )
         self._wake_listener = listener
         listener.start()

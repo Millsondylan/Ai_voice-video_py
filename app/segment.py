@@ -8,7 +8,7 @@ from typing import List
 
 import threading
 
-from app.audio.capture import run_segment
+from app.audio.capture import SegmentCaptureResult, run_segment
 from app.audio.mic import MicrophoneStream
 from app.audio.stt import StreamingTranscriber
 from app.util.config import AppConfig
@@ -24,6 +24,9 @@ class SegmentResult:
     video_path: Path
     audio_path: Path
     frames: List  # List of np.ndarray frames
+    stop_reason: str
+    duration_ms: int
+    audio_ms: int
 
 
 class SegmentRecorder:
@@ -45,59 +48,32 @@ class SegmentRecorder:
         self._stop_event.clear()
 
         # Open microphone and video capture
-        mic = MicrophoneStream(
+        with MicrophoneStream(
             rate=self.sample_rate,
-            frame_duration_ms=self.frame_ms,
+            chunk_samples=self.config.chunk_samples,
             input_device_name=self.config.mic_device_name,
-        )
-        mic.start()
+        ) as mic, VideoCapture(source=self.config.camera_source, width=self.config.video_width_px) as camera:
+            ret, frame = camera.read()
+            if not ret:
+                raise RuntimeError("Failed to read initial frame from camera source")
+            frame_height, frame_width = frame.shape[:2]
 
-        try:
-            camera = VideoCapture(source=self.config.camera_source, width=self.config.video_width_px)
-            camera.__enter__()
+            fps = camera.fps()
+            with VideoSegmentWriter(video_path, fps=fps, frame_size=(frame_width, frame_height)) as writer:
+                writer.write(frame)
 
-            try:
-                # Prime the camera to get initial frame size
-                ret, frame = camera.read()
-                if not ret:
-                    raise RuntimeError("Failed to read initial frame from camera source")
-                frame_height, frame_width = frame.shape[:2]
+                def _capture_frame() -> None:
+                    ok, next_frame = camera.read()
+                    if ok:
+                        writer.write(next_frame)
 
-                fps = camera.fps()
-                writer = VideoSegmentWriter(video_path, fps=fps, frame_size=(frame_width, frame_height))
-                writer.__enter__()
-
-                try:
-                    # Start video recording
-                    writer.write(frame)
-
-                    # Capture audio segment with full pre-roll and robust stop detection
-                    capture_result = run_segment(
-                        mic=mic, stt=self.transcriber, config=self.config, stop_event=self._stop_event
-                    )
-
-                    # Continue capturing video frames during audio capture
-                    # (In practice, video and audio should be synchronized in a threaded manner,
-                    # but for simplicity we'll capture video after audio or in parallel if needed)
-                    # For now, just capture some frames throughout the duration
-                    video_duration_s = capture_result.duration_ms / 1000.0
-                    target_frames = int(fps * video_duration_s)
-
-                    for _ in range(min(target_frames, 1000)):  # Cap at 1000 frames
-                        ret, frame = camera.read()
-                        if ret:
-                            writer.write(frame)
-
-                finally:
-                    writer.__exit__(None, None, None)
-
-            finally:
-                camera.__exit__(None, None, None)
-
-        finally:
-            # CRITICAL: Close mic before TTS (audio I/O serialization)
-            mic.stop()
-            mic.terminate()
+                capture_result: SegmentCaptureResult = run_segment(
+                    mic=mic,
+                    stt=self.transcriber,
+                    config=self.config,
+                    stop_event=self._stop_event,
+                    on_chunk=_capture_frame,
+                )
 
         # Write audio to WAV file
         self._write_wav_from_bytes(audio_path, capture_result.audio_bytes)
@@ -116,6 +92,9 @@ class SegmentRecorder:
             video_path=video_path,
             audio_path=audio_path,
             frames=frames,
+            stop_reason=capture_result.stop_reason,
+            duration_ms=capture_result.duration_ms,
+            audio_ms=capture_result.audio_ms,
         )
 
     def _write_wav(self, path: Path, frames: List[bytes]) -> None:

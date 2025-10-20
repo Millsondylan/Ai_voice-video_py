@@ -31,8 +31,8 @@ def build_transcribers(config: AppConfig) -> tuple[StreamingTranscriber, Streami
         raise RuntimeError("Set VOSK_MODEL_PATH or provide 'vosk_model_path' in the config.")
 
     model = Model(model_path)
-    wake_transcriber = StreamingTranscriber(sample_rate=16000, model=model)
-    segment_transcriber = StreamingTranscriber(sample_rate=16000, model=model)
+    wake_transcriber = StreamingTranscriber(sample_rate=config.sample_rate_hz, model=model)
+    segment_transcriber = StreamingTranscriber(sample_rate=config.sample_rate_hz, model=model)
     return wake_transcriber, segment_transcriber
 
 
@@ -59,7 +59,7 @@ def main() -> int:
         return 1
 
     segment_recorder = SegmentRecorder(config, segment_transcriber)
-    tts = SpeechSynthesizer()
+    tts = SpeechSynthesizer(voice=config.tts_voice, rate=config.tts_rate)
 
     qt_app = QtWidgets.QApplication(sys.argv)
     window = GlassesWindow(
