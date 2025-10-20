@@ -10,6 +10,7 @@ from app.ai.vlm_client import VLMClient
 from app.audio.tts import SpeechSynthesizer
 from app.audio.wake import WakeWordListener
 from app.audio.stt import StreamingTranscriber
+from app.route import route_and_respond
 from app.segment import SegmentRecorder, SegmentResult
 from app.util.config import AppConfig
 from app.util.fileio import archive_session
@@ -148,7 +149,12 @@ class GlassesWindow(QtWidgets.QMainWindow):
 
     def _call_vlm(self, result: SegmentResult) -> None:
         try:
-            response = self.vlm_client.infer(result.clean_transcript, result.frames_base64)
+            response = route_and_respond(
+                config=self.config,
+                vlm_client=self.vlm_client,
+                transcript=result.clean_transcript,
+                segment_frames=result.frames,
+            )
             self.response_ready.emit(response)
         except Exception as exc:  # pragma: no cover - UI surface
             self.error_occurred.emit(str(exc))

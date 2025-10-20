@@ -7,10 +7,13 @@ from app.util.config import AppConfig
 
 
 DEFAULT_SYSTEM_PROMPT = (
-    "You are “Glasses,” a concise vision assistant.\n"
-    "Only describe what you can confirm from the provided images; use the transcript solely to understand the user's question.\n"
-    "Answer in 1–2 sentences, focusing on the visual evidence. If the images do not clearly answer the question, state that the view is inconclusive.\n"
-    "Do not speculate, guess, or identify people. Be factual, neutral, and brief."
+    "You are \"Glasses,\" a concise assistant that can see images but only uses them when necessary.\n"
+    "Rules:\n"
+    "• If the user's intent is normal chat (greeting, small talk, general Q&A), ignore images and reply normally.\n"
+    "• If the user asks about the scene (\"what is this/that?\", \"read this\", \"what color…\", \"where is…\", \"look at…\") then analyze provided images and answer in ≤2 sentences.\n"
+    "• For \"what is that/this\", assume the user points at the main focus/center. Identify just that item.\n"
+    "• If unclear, ask one short clarifying question.\n"
+    "• Don't comment on irrelevant background. Don't identify real people."
 )
 
 
@@ -31,9 +34,16 @@ def build_vlm_payload(config: AppConfig, transcript: str, images_b64: List[str])
         if transcript_clean:
             user_content.append({"type": "text", "text": transcript_clean})
         else:
-            user_content.append({"type": "text", "text": "Describe the scene succinctly."})
+            # Only ask for scene description if images are provided
+            if images_b64:
+                user_content.append({"type": "text", "text": "Describe the scene succinctly."})
+            else:
+                user_content.append({"type": "text", "text": "Hello"})
 
-        user_content.extend({"type": "input_image", "image_base64": img} for img in images_b64)
+        # Only add images if the list is non-empty
+        if images_b64:
+            user_content.extend({"type": "input_image", "image_base64": img} for img in images_b64)
+
         messages.append({"role": "user", "content": user_content})
         return {"model": config.vlm_model, "messages": messages}
 
@@ -50,31 +60,36 @@ def build_together_messages(config: AppConfig, transcript: str, images_b64: List
     if system_prompt:
         messages.append({"role": "system", "content": system_prompt})
 
-    prepared_images = _prepare_together_images(images_b64)
+    # Prepare images (resize and compress)
+    prepared_images = _prepare_together_images(images_b64) if images_b64 else []
 
-    user_lines: List[str] = []
     transcript_clean = transcript.strip()
+
+    # If no images: use simple string format (Together.ai expects string, not list)
+    if not prepared_images:
+        user_text = transcript_clean if transcript_clean else "Hello"
+        messages.append({"role": "user", "content": user_text})
+        return messages
+
+    # If images present: use OpenAI-style vision format with content blocks
+    user_content = []
+
+    # Add transcript as text
     if transcript_clean:
-        user_lines.append(f"User transcript:\n{transcript_clean}")
-    else:
-        user_lines.append("No transcript text captured. Please analyze the images.")
+        user_content.append({"type": "text", "text": transcript_clean})
 
-    if prepared_images:
-        frame_lines = ["Attached frames (data:image/jpeg;base64, ...):"]
-        for idx, img in enumerate(prepared_images, start=1):
-            frame_lines.append(f"[Frame {idx}] data:image/jpeg;base64,{img}")
-        dropped = len(images_b64) - len(prepared_images)
-        if dropped > 0:
-            frame_lines.append(f"(Dropped {dropped} additional frame(s) to stay within context limits.)")
-        user_lines.append("\n".join(frame_lines))
-    else:
-        user_lines.append("No frames captured from the segment.")
+    # Add images using proper vision API format
+    for img_b64 in prepared_images:
+        user_content.append({
+            "type": "image_url",
+            "image_url": {"url": f"data:image/jpeg;base64,{img_b64}"}
+        })
 
-    messages.append({"role": "user", "content": "\n\n".join(user_lines)})
+    messages.append({"role": "user", "content": user_content})
     return messages
 
 
-def _prepare_together_images(images_b64: List[str], max_images: int = 4, max_width: int = 512) -> List[str]:
+def _prepare_together_images(images_b64: List[str], max_images: int = 6, max_width: int = 960) -> List[str]:
     prepared: List[str] = []
     for raw_b64 in images_b64[:max_images]:
         processed = _compress_base64_image(raw_b64, max_width=max_width, quality=80)
