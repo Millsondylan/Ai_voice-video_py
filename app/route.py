@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 
 import numpy as np
 
@@ -16,6 +16,7 @@ def route_and_respond(
     vlm_client: VLMClient,
     transcript: str,
     segment_frames: List[np.ndarray],
+    history: Optional[List[Dict[str, str]]] = None,
 ) -> Dict[str, Any]:
     """
     Route request based on intent and call VLM with/without images.
@@ -33,6 +34,7 @@ def route_and_respond(
         vlm_client: Multimodal VLM client
         transcript: User's transcribed query
         segment_frames: Raw video frames from segment recording
+        history: Optional conversation history in chronological order
 
     Returns:
         Dict containing:
@@ -56,7 +58,7 @@ def route_and_respond(
         )
 
     # Step 3: Call VLM with or without images
-    response = vlm_client.infer(transcript, images_b64)
+    response = vlm_client.infer(transcript, images_b64, history=history)
 
     # Step 4: Clean up response text if no vision was used
     text = response.get("text", "")

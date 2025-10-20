@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import json
 import os
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 
 import requests
 
@@ -44,13 +44,13 @@ class VLMClient:
         self._together_client = Together(api_key=api_key)
         self._together_model = self.config.vlm_model or "openai/gpt-oss-20b"
 
-    def infer(self, transcript: str, images_b64: List[str]) -> Dict[str, Any]:
+    def infer(self, transcript: str, images_b64: List[str], history: Optional[List[Dict[str, str]]] = None) -> Dict[str, Any]:
         if self.provider == "together":
-            return self._infer_together(transcript, images_b64)
-        return self._infer_http(transcript, images_b64)
+            return self._infer_together(transcript, images_b64, history)
+        return self._infer_http(transcript, images_b64, history)
 
-    def _infer_http(self, transcript: str, images_b64: List[str]) -> Dict[str, Any]:
-        payload = build_vlm_payload(self.config, transcript, images_b64)
+    def _infer_http(self, transcript: str, images_b64: List[str], history: Optional[List[Dict[str, str]]]) -> Dict[str, Any]:
+        payload = build_vlm_payload(self.config, transcript, images_b64, history=history)
         headers = {"Content-Type": "application/json"}
         if self.api_key:
             headers["Authorization"] = f"Bearer {self.api_key}"
@@ -63,8 +63,8 @@ class VLMClient:
         data = response.json()
         return {"payload": payload, "response": data, "text": extract_text_from_response(data)}
 
-    def _infer_together(self, transcript: str, images_b64: List[str]) -> Dict[str, Any]:
-        messages = build_together_messages(self.config, transcript, images_b64)
+    def _infer_together(self, transcript: str, images_b64: List[str], history: Optional[List[Dict[str, str]]]) -> Dict[str, Any]:
+        messages = build_together_messages(self.config, transcript, images_b64, history=history)
         response = self._together_client.chat.completions.create(model=self._together_model, messages=messages)
 
         response_dict = response.model_dump() if hasattr(response, "model_dump") else _object_to_dict(response)

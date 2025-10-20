@@ -1,0 +1,28 @@
+2025-10-20 22:32:09,425 debug logging initialized
+INFO:root:check append
+[2025-10-20 22:33:05] glasses.audio - INFO - manual log test
+[2025-10-20 22:52:52] glasses.audio - INFO - verify logging to file works
+[2025-10-20 23:04:20] glasses.audio - INFO - Segment recording started (vad=2 silence_ms=1200 chunk_ms=20 pre_roll_ms=300)
+[2025-10-20 23:04:21] glasses.audio - INFO - VAD detected speech during pre-roll; capturing segment
+[2025-10-20 23:04:26] glasses.audio - INFO - Segment stopped (reason=silence duration_ms=5145 audio_ms=1700 stt_ms=4153)
+[2025-10-20 23:04:26] glasses.audio - INFO - Captured audio bytes=54400 stop_reason=silence duration_ms=4143
+[2025-10-20 23:04:27] glasses.audio - INFO - TTS started len=57
+[2025-10-20 23:04:28] glasses.audio - INFO - TTS completed in 75 ms
+[2025-10-20 23:04:34] glasses.audio - INFO - Segment recording started (vad=2 silence_ms=1200 chunk_ms=20 pre_roll_ms=300)
+[2025-10-20 23:04:35] glasses.audio - INFO - VAD detected speech during pre-roll; capturing segment
+[2025-10-20 23:04:41] glasses.audio - INFO - Segment stopped (reason=manual duration_ms=6896 audio_ms=1620 stt_ms=5858)
+[2025-10-20 23:04:42] glasses.audio - INFO - Captured audio bytes=51840 stop_reason=manual duration_ms=5856
+[2025-10-20 23:05:43] glasses.audio - INFO - Segment recording started (vad=2 silence_ms=1200 chunk_ms=20 pre_roll_ms=300)
+[2025-10-20 23:05:45] glasses.audio - INFO - Segment stopped (reason=manual duration_ms=1762 audio_ms=300 stt_ms=888)
+[2025-10-20 23:05:45] glasses.audio - INFO - Captured audio bytes=9600 stop_reason=manual duration_ms=884
+[2025-10-20 23:05:50] glasses.audio - INFO - Segment recording started (vad=2 silence_ms=1200 chunk_ms=20 pre_roll_ms=300)
+[2025-10-20 23:05:51] glasses.audio - INFO - VAD detected speech during pre-roll; capturing segment
+[2025-10-20 23:05:54] glasses.audio - INFO - Segment stopped (reason=silence duration_ms=3882 audio_ms=1200 stt_ms=2818)
+[2025-10-20 23:05:54] glasses.audio - INFO - Captured audio bytes=38400 stop_reason=silence duration_ms=2806
+[2025-10-20 23:05:55] glasses.audio - INFO - TTS started len=23
+[2025-10-20 23:05:55] glasses.audio - INFO - TTS completed in 57 ms
+[2025-10-20 23:05:56] glasses.audio - INFO - Segment recording started (vad=2 silence_ms=1200 chunk_ms=20 pre_roll_ms=300)
+[2025-10-20 23:05:56] glasses.audio - INFO - VAD detected speech during pre-roll; capturing segment
+[2025-10-20 23:06:04] glasses.audio - INFO - Segment stopped (reason=silence duration_ms=8341 audio_ms=4220 stt_ms=7444)
+[2025-10-20 23:06:04] glasses.audio - INFO - Captured audio bytes=135040 stop_reason=silence duration_ms=7442
+[2025-10-20 23:06:04] glasses.audio - INFO - TTS started len=23

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import base64
-from typing import List
+from typing import Dict, List, Optional
 
 from app.util.config import AppConfig
 
@@ -21,14 +21,29 @@ def build_system_prompt(config: AppConfig) -> str:
     return config.vlm_system_prompt or DEFAULT_SYSTEM_PROMPT
 
 
-def build_vlm_payload(config: AppConfig, transcript: str, images_b64: List[str]) -> dict:
+def build_vlm_payload(
+    config: AppConfig,
+    transcript: str,
+    images_b64: List[str],
+    history: Optional[List[Dict[str, str]]] = None,
+) -> dict:
     system_prompt = build_system_prompt(config)
     transcript_clean = transcript.strip()
+    history = history or []
 
     if config.vlm_model:
         messages = []
         if system_prompt:
             messages.append({"role": "system", "content": [{"type": "text", "text": system_prompt}]})
+
+        for turn in history:
+            text = turn.get("text", "").strip()
+            if not text:
+                continue
+            role = turn.get("role", "user")
+            if role not in {"user", "assistant"}:
+                role = "user"
+            messages.append({"role": role, "content": [{"type": "text", "text": text}]})
 
         user_content = []
         if transcript_clean:
@@ -47,14 +62,32 @@ def build_vlm_payload(config: AppConfig, transcript: str, images_b64: List[str])
         messages.append({"role": "user", "content": user_content})
         return {"model": config.vlm_model, "messages": messages}
 
+    history_lines: List[str] = []
+    for turn in history:
+        text = turn.get("text", "").strip()
+        if not text:
+            continue
+        role = turn.get("role", "user").title()
+        history_lines.append(f"{role}: {text}")
+
+    if transcript_clean:
+        history_lines.append(f"User: {transcript_clean}")
+
+    prompt = "\n".join(history_lines).strip()
+
     return {
         "images": images_b64,
-        "prompt": transcript_clean,
+        "prompt": prompt or transcript_clean,
         "system": system_prompt,
     }
 
 
-def build_together_messages(config: AppConfig, transcript: str, images_b64: List[str]) -> List[dict]:
+def build_together_messages(
+    config: AppConfig,
+    transcript: str,
+    images_b64: List[str],
+    history: Optional[List[Dict[str, str]]] = None,
+) -> List[dict]:
     system_prompt = build_system_prompt(config)
     messages: List[dict] = []
     if system_prompt:
@@ -64,6 +97,16 @@ def build_together_messages(config: AppConfig, transcript: str, images_b64: List
     prepared_images = _prepare_together_images(images_b64) if images_b64 else []
 
     transcript_clean = transcript.strip()
+    history = history or []
+
+    for turn in history:
+        text = turn.get("text", "").strip()
+        if not text:
+            continue
+        role = turn.get("role", "user")
+        if role not in {"user", "assistant"}:
+            role = "user"
+        messages.append({"role": role, "content": text})
 
     # If no images: use simple string format (Together.ai expects string, not list)
     if not prepared_images:

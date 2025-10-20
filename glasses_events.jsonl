@@ -1,0 +1,31 @@
+{"ts": 1760994260888, "event": "segment.started_at", "session_id": "4004a3d1288f", "session_state": "Recording", "turn_index": 0, "history_tokens": 0, "segment_start_ms": 1760994260881, "vad_aggr": 2, "silence_ms": 1200, "chunk_ms": 20, "pre_roll_ms": 300}
+{"ts": 1760994264022, "event": "stt.partial", "session_id": "4004a3d1288f", "session_state": "Recording", "turn_index": 0, "history_tokens": 0, "text": "oh"}
+{"ts": 1760994264742, "event": "stt.partial", "session_id": "4004a3d1288f", "session_state": "Recording", "turn_index": 0, "history_tokens": 0, "text": "oh use it"}
+{"ts": 1760994266008, "event": "stt.final_text", "session_id": "4004a3d1288f", "session_state": "Recording", "turn_index": 0, "history_tokens": 0, "text": "oh use it"}
+{"ts": 1760994266027, "event": "segment.stopped_at", "session_id": "4004a3d1288f", "session_state": "Recording", "turn_index": 0, "history_tokens": 0, "segment_stop_ms": 1760994266026, "stop_reason": "silence", "duration_ms": 5145, "audio_ms": 1700, "stt_ms": 4153, "stt_final_text": "oh use it"}
+{"ts": 1760994267978, "event": "tts.text", "session_id": "4004a3d1288f", "session_state": "Speaking", "turn_index": 0, "history_tokens": 15, "tts_started_ms": 1760994267974, "text_preview": "I'm here to help! What would you like to know or discuss?", "text_len": 57}
+{"ts": 1760994268049, "event": "tts.ms", "session_id": "4004a3d1288f", "session_state": "Speaking", "turn_index": 0, "history_tokens": 15, "tts_done_ms": 1760994268049, "duration_ms": 75}
+{"ts": 1760994270278, "event": "stt.partial", "text": "i'm not"}
+{"ts": 1760994270741, "event": "stt.partial", "text": "i'm going to help"}
+{"ts": 1760994271242, "event": "stt.partial", "text": "i'm not out what would"}
+{"ts": 1760994271437, "event": "stt.partial", "text": "i'm not out what would you like"}
+{"ts": 1760994271722, "event": "stt.partial", "text": "i'm not out what would you like to"}
+{"ts": 1760994271904, "event": "stt.partial", "text": "i'm not out what would you like to know"}
+{"ts": 1760994272303, "event": "stt.partial", "text": "i'm not out what would you like to know i just"}
+{"ts": 1760994272568, "event": "stt.partial", "text": "i'm not out what would you like to know i discuss"}
+{"ts": 1760994272720, "event": "stt.partial", "text": "i'm not out what would you like to know or discuss"}
+{"ts": 1760994274865, "event": "segment.started_at", "session_id": "95e9d58a42b0", "session_state": "Recording", "turn_index": 0, "history_tokens": 0, "segment_start_ms": 1760994274861, "vad_aggr": 2, "silence_ms": 1200, "chunk_ms": 20, "pre_roll_ms": 300}
+{"ts": 1760994281754, "event": "stt.final_text", "session_id": "95e9d58a42b0", "session_state": "Recording", "turn_index": 0, "history_tokens": 0, "text": ""}
+{"ts": 1760994281759, "event": "segment.stopped_at", "session_id": "95e9d58a42b0", "session_state": "Recording", "turn_index": 0, "history_tokens": 0, "segment_stop_ms": 1760994281757, "stop_reason": "manual", "duration_ms": 6896, "audio_ms": 1620, "stt_ms": 5858, "stt_final_text": ""}
+{"ts": 1760994343252, "event": "segment.started_at", "session_id": "f8612324b854", "session_state": "Recording", "turn_index": 0, "history_tokens": 0, "segment_start_ms": 1760994343246, "vad_aggr": 2, "silence_ms": 1200, "chunk_ms": 20, "pre_roll_ms": 300}
+{"ts": 1760994345004, "event": "stt.final_text", "session_id": "f8612324b854", "session_state": "Recording", "turn_index": 0, "history_tokens": 0, "text": ""}
+{"ts": 1760994345009, "event": "segment.stopped_at", "session_id": "f8612324b854", "session_state": "Recording", "turn_index": 0, "history_tokens": 0, "segment_stop_ms": 1760994345008, "stop_reason": "manual", "duration_ms": 1762, "audio_ms": 300, "stt_ms": 888, "stt_final_text": ""}
+{"ts": 1760994350786, "event": "segment.started_at", "session_id": "8a088bf58f62", "session_state": "Recording", "turn_index": 0, "history_tokens": 0, "segment_start_ms": 1760994350784, "vad_aggr": 2, "silence_ms": 1200, "chunk_ms": 20, "pre_roll_ms": 300}
+{"ts": 1760994354665, "event": "stt.final_text", "session_id": "8a088bf58f62", "session_state": "Recording", "turn_index": 0, "history_tokens": 0, "text": ""}
+{"ts": 1760994354666, "event": "segment.stopped_at", "session_id": "8a088bf58f62", "session_state": "Recording", "turn_index": 0, "history_tokens": 0, "segment_stop_ms": 1760994354666, "stop_reason": "silence", "duration_ms": 3882, "audio_ms": 1200, "stt_ms": 2818, "stt_final_text": ""}
+{"ts": 1760994355322, "event": "tts.text", "session_id": "8a088bf58f62", "session_state": "Speaking", "turn_index": 0, "history_tokens": 4, "tts_started_ms": 1760994355317, "text_preview": "I didn't hear anything.", "text_len": 23}
+{"ts": 1760994355374, "event": "tts.ms", "session_id": "8a088bf58f62", "session_state": "Speaking", "turn_index": 0, "history_tokens": 4, "tts_done_ms": 1760994355374, "duration_ms": 57}
+{"ts": 1760994356076, "event": "segment.started_at", "session_id": "8a088bf58f62", "session_state": "Recording", "turn_index": 1, "history_tokens": 4, "segment_start_ms": 1760994356074, "vad_aggr": 2, "silence_ms": 1200, "chunk_ms": 20, "pre_roll_ms": 300}
+{"ts": 1760994364407, "event": "stt.final_text", "session_id": "8a088bf58f62", "session_state": "Recording", "turn_index": 1, "history_tokens": 4, "text": ""}
+{"ts": 1760994364415, "event": "segment.stopped_at", "session_id": "8a088bf58f62", "session_state": "Recording", "turn_index": 1, "history_tokens": 4, "segment_stop_ms": 1760994364415, "stop_reason": "silence", "duration_ms": 8341, "audio_ms": 4220, "stt_ms": 7444, "stt_final_text": ""}
+{"ts": 1760994364881, "event": "tts.text", "session_id": "8a088bf58f62", "session_state": "Speaking", "turn_index": 1, "history_tokens": 8, "tts_started_ms": 1760994364877, "text_preview": "I didn't hear anything.", "text_len": 23}

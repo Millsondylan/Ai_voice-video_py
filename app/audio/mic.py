@@ -5,6 +5,9 @@ from typing import Optional
 
 import pyaudio
 
+from app.audio.io import get_audio_io_controller
+from app.util.log import logger as audio_logger
+
 
 class MicrophoneStream:
     """Thin PyAudio wrapper that supports device selection and variable chunk sizes."""
@@ -24,6 +27,7 @@ class MicrophoneStream:
         self._audio = pyaudio.PyAudio()
         self._stream: Optional[pyaudio.Stream] = None
         self._lock = threading.Lock()
+        self._controller = get_audio_io_controller()
 
         if chunk_samples is not None:
             self.chunk = int(chunk_samples)
@@ -41,19 +45,33 @@ class MicrophoneStream:
         with self._lock:
             if self._stream and self._stream.is_active():
                 return
-            self._stream = self._audio.open(
-                format=self.format,
-                channels=self.channels,
-                rate=self.rate,
-                input=True,
-                frames_per_buffer=self.chunk,
-                input_device_index=self.input_device_index,
-                stream_callback=None,
-            )
+            try:
+                self._stream = self._open_stream(self.input_device_index)
+            except OSError as exc:
+                # Common error when no default input device is available
+                if self.input_device_index is None:
+                    fallback_index = self._find_first_input_device()
+                    if fallback_index is not None:
+                        audio_logger.warning(
+                            "Primary microphone open failed (%s); falling back to device index %s",
+                            exc,
+                            fallback_index,
+                        )
+                        self._stream = self._open_stream(fallback_index)
+                        self.input_device_index = fallback_index
+                    else:
+                        audio_logger.error("No input devices available for recording: %s", exc)
+                        raise
+                else:
+                    audio_logger.error("Failed to open microphone device %s: %s", self.input_device_index, exc)
+                    raise
+            self._controller.register_mic(self)
 
     def read(self, frames: Optional[int] = None) -> bytes:
         if not self._stream:
             raise RuntimeError("MicrophoneStream not started")
+        # Block if input is paused (e.g., during TTS playback)
+        self._controller.wait_if_paused()
         frame_count = int(frames) if frames is not None else self.chunk
         return self._stream.read(frame_count, exception_on_overflow=False)
 
@@ -65,6 +83,7 @@ class MicrophoneStream:
                 finally:
                     self._stream.close()
                 self._stream = None
+                self._controller.unregister_mic()
 
     def terminate(self) -> None:
         self.stop()
@@ -95,6 +114,26 @@ class MicrophoneStream:
             if target in lowered or lowered in target:
                 fallback = idx
         return fallback
+
+    def _find_first_input_device(self) -> Optional[int]:
+        """Return the first available input-capable device index, if any."""
+        device_count = self._audio.get_device_count()
+        for idx in range(device_count):
+            info = self._audio.get_device_info_by_index(idx)
+            if info.get("maxInputChannels", 0) > 0:
+                return idx
+        return None
+
+    def _open_stream(self, device_index: Optional[int]):
+        return self._audio.open(
+            format=self.format,
+            channels=self.channels,
+            rate=self.rate,
+            input=True,
+            frames_per_buffer=self.chunk,
+            input_device_index=device_index,
+            stream_callback=None,
+        )
 
     @staticmethod
     def list_input_devices() -> list[dict]:

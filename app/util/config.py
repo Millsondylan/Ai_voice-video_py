@@ -11,7 +11,7 @@ from dotenv import load_dotenv
 # Default configuration values aligned with the build brief.
 DEFAULT_CONFIG: Dict[str, Any] = {
     "wake_word": "hey glasses",
-    "silence_ms": 1200,
+    "silence_ms": 1500,
     "max_segment_s": 45,
     "frame_sample_fps": 2,
     "frame_max_images": 6,
@@ -23,7 +23,7 @@ DEFAULT_CONFIG: Dict[str, Any] = {
     "sample_rate_hz": 16000,
     "chunk_samples": 320,
     "vad_aggressiveness": 2,
-    "pre_roll_ms": 300,
+    "pre_roll_ms": 400,
     "wake_variants": ["hey glasses", "hey-glasses", "hay glasses"],
     "wake_sensitivity": 0.65,
     "tts_voice": None,

@@ -5,7 +5,7 @@ import os
 import time
 from collections import Counter
 from dataclasses import dataclass
-from typing import Optional
+from typing import Any, Dict, List, Optional
 
 
 try:
@@ -14,6 +14,8 @@ except ImportError as exc:  # pragma: no cover - allows lazy dependency installa
     raise RuntimeError(
         "The 'vosk' package is required for speech recognition. Install it via 'pip install vosk'."
     ) from exc
+
+from app.util.log import get_event_logger, now_ms
 
 
 @dataclass
@@ -52,6 +54,10 @@ class StreamingTranscriber:
         self._start_time: Optional[float] = None
         self._end_time: Optional[float] = None
         self._finalized_text: Optional[str] = None
+        self._partial_events: List[Dict[str, Any]] = []
+        self._last_partial_logged: Optional[str] = None
+        self._final_event: Optional[Dict[str, Any]] = None
+        self._final_logged: bool = False
 
     # --------------------------------------------------------------------- lifecycle
     def reset(self) -> None:
@@ -63,6 +69,10 @@ class StreamingTranscriber:
         self._start_time = None
         self._end_time = None
         self._finalized_text = None
+        self._partial_events = []
+        self._last_partial_logged = None
+        self._final_event = None
+        self._final_logged = False
 
     def start(self) -> None:
         self.reset()
@@ -87,6 +97,7 @@ class StreamingTranscriber:
         partial = partial_json.get("partial", "").strip()
         self._partial = partial
         self._refresh_tokens()
+        self._record_partial(partial)
         return TranscriptionResult(text=partial, is_final=False)
 
     def end(self) -> None:
@@ -102,7 +113,9 @@ class StreamingTranscriber:
             self._final_chunks.append(text)
         self._partial = ""
         self._refresh_tokens()
-        return self.transcript
+        final_text = self.transcript
+        self._record_final(final_text)
+        return final_text
 
     # ------------------------------------------------------------------- properties
     @property
@@ -155,3 +168,37 @@ class StreamingTranscriber:
     def _refresh_tokens(self) -> None:
         combined = self.combined_text
         self._latest_tokens = combined.lower().split() if combined else []
+
+    # ------------------------------------------------------------------- telemetry
+    def _record_partial(self, text: str) -> None:
+        if not text:
+            return
+        if text == self._last_partial_logged:
+            return
+        ts = now_ms()
+        event = {"ts_ms": ts, "text": text}
+        self._partial_events.append(event)
+        try:
+            get_event_logger().log_stt_partial(text)
+        except Exception:
+            pass
+        self._last_partial_logged = text
+
+    def _record_final(self, text: str) -> None:
+        if self._final_logged:
+            return
+        ts = now_ms()
+        self._final_event = {"ts_ms": ts, "text": text}
+        try:
+            get_event_logger().log_stt_final(text)
+        except Exception:
+            pass
+        self._final_logged = True
+
+    @property
+    def partial_events(self) -> List[Dict[str, Any]]:
+        return list(self._partial_events)
+
+    @property
+    def final_event(self) -> Optional[Dict[str, Any]]:
+        return dict(self._final_event) if self._final_event else None
