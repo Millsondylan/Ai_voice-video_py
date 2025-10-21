@@ -100,7 +100,9 @@ class ConversationMode:
             self.continuous_buffer = initial_buffer
 
         self.logger.log_wake_detected()
-        print(f"\n[CONVERSATION MODE] Started - Say 'bye glasses' or wait 15s to exit")
+        self.logger.log_event('conversation_started', {
+            'timeout_s': self.conversation_timeout_ms / 1000
+        })
 
         mic = MicrophoneStream(
             rate=self.config.sample_rate_hz,
@@ -111,40 +113,68 @@ class ConversationMode:
 
         try:
             while True:
+                # FIX #3: MULTI-TURN CONVERSATION - Restart transcription between turns
+                # This is THE CRITICAL FIX for "silent after first response" bug
+
                 # Record one turn
                 turn_result = self._record_turn(mic)
 
                 if not turn_result:
-                    print(f"[CONVERSATION MODE] No speech detected, exiting")
+                    self.logger.log_event('conversation_no_speech', {})
                     break
 
                 user_text = turn_result['transcript']
 
                 # Check for exit phrases
                 if self._should_exit(user_text):
-                    print(f"[CONVERSATION MODE] Exit phrase detected: '{user_text}'")
+                    self.logger.log_event('conversation_exit_command', {'text': user_text})
                     self.tts.speak("Goodbye!")
                     break
 
+                # FIX #3: STOP transcription before processing
+                # This prevents feedback loop and prepares for restart
+                try:
+                    self.transcriber.end()
+                except Exception as e:
+                    self.logger.log_event('transcription_stop_error', {'error': str(e)})
+
                 # Get response with context
                 context = self.session.get_context()
-                response = self.on_turn_complete(user_text, context, turn_result.get('frames'))
 
-                # Speak response
-                self.tts.speak(response['text'])
+                try:
+                    response = self.on_turn_complete(user_text, context, turn_result.get('frames'))
 
-                # Save turn
-                self.session.add_turn(user_text, response['text'], turn_result.get('audio_path'))
+                    # Speak response
+                    self.tts.speak(response['text'])
 
-                print(f"[CONVERSATION MODE] Turn {len(self.session.turns)} complete")
-                print(f"   User: {user_text}")
-                print(f"   Assistant: {response['text']}")
+                    # Save turn
+                    self.session.add_turn(user_text, response['text'], turn_result.get('audio_path'))
+
+                    self.logger.log_event('conversation_turn_complete', {
+                        'turn': len(self.session.turns),
+                        'user': user_text,
+                        'assistant': response['text'][:100]
+                    })
+
+                finally:
+                    # FIX #3: ALWAYS restart transcription after each turn
+                    # This ensures the system is ready to hear the next utterance
+                    try:
+                        self.transcriber.reset()
+                        self.transcriber.start()
+                    except Exception as e:
+                        self.logger.log_event('transcription_restart_error', {'error': str(e)})
+                        # If we can't restart transcription, exit conversation mode
+                        break
 
         finally:
             mic.stop()
             mic.terminate()
 
-        print(f"\n[CONVERSATION MODE] Ended - {len(self.session.turns)} turns, {self.session.duration_seconds():.1f}s")
+        self.logger.log_event('conversation_ended', {
+            'turns': len(self.session.turns),
+            'duration_s': self.session.duration_seconds()
+        })
         return self.session
 
     def _record_turn(self, mic: MicrophoneStream) -> Optional[dict]:
@@ -153,7 +183,7 @@ class ConversationMode:
 
         Returns None if timeout or no speech detected.
         """
-        print(f"\n[CONVERSATION MODE] Listening... (15s timeout)")
+        self.logger.log_event('conversation_listening', {'timeout_s': self.conversation_timeout_ms / 1000})
 
         # Use modified silence threshold for conversation mode
         # Longer timeout before considering turn complete

@@ -9,3 +9,6 @@ numpy
 python-dotenv
 requests
 pytest
+pvporcupine
+elevenlabs
+tenacity
