@@ -4,3 +4,5 @@ __pycache__/
 models/*.zip
 *.DS_Store
 .env
+*.log
+voice_assistant.log
