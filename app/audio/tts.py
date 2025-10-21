@@ -120,11 +120,13 @@ class SpeechSynthesizer:
     ) -> None:
         self._driver_name = "nsss" if platform.system() == "Darwin" else None
         self._voice = voice
-        self._rate = rate
+        self._rate = rate or 175
         self._engine = self._create_engine()
+        self._warm_engine()
         self._lock = threading.Lock()
         self._current_thread: Optional[threading.Thread] = None
         self._turn_index = 0
+        self._multiprocess = MultiprocessTTS(rate=self._rate, driver_name=self._driver_name)
 
         # ElevenLabs setup
         self._elevenlabs_client = None
@@ -149,15 +151,29 @@ class SpeechSynthesizer:
                 engine.setProperty("voice", self._voice)
             except Exception:
                 pass
-        if self._rate:
-            try:
-                engine.setProperty("rate", self._rate)
-            except Exception:
-                pass
+        try:
+            engine.setProperty("rate", self._rate)
+        except Exception:
+            pass
+        try:
+            engine.setProperty("volume", 1.0)
+        except Exception:
+            pass
         return engine
 
     def _reinitialize_engine(self) -> None:
         self._engine = self._create_engine()
+        self._warm_engine()
+
+    def _warm_engine(self) -> None:
+        """Pre-warm pyttsx3 engine to avoid first-call latency."""
+        try:
+            self._engine.say("")
+            self._engine.runAndWait()
+            self._engine.stop()
+        except Exception:
+            # Best-effort warm-up; ignore failures
+            pass
 
     def set_turn_index(self, turn_index: int):
         """Set current turn index for logging."""
@@ -331,6 +347,14 @@ class SpeechSynthesizer:
         thread.start()
         return thread
 
+    def speak_async_nonblocking(self, text: str):
+        """Speak text using multiprocessing for true non-blocking playback."""
+        clean_text = OutputSanitizer.sanitize_for_tts(text)
+        if not clean_text:
+            return None
+        self._multiprocess.stop()
+        return self._multiprocess.speak_async(clean_text)
+
     def _fallback_say(self, text: str) -> None:
         """Fallback to platform speech command if pyttsx3 fails."""
         system = platform.system()
@@ -341,3 +365,16 @@ class SpeechSynthesizer:
                 subprocess.run(["espeak", text], check=False)
         except Exception:
             pass
+
+    def stop(self) -> None:
+        """Stop any in-progress speech and clear async workers."""
+        with audio_out_lock:
+            with self._lock:
+                try:
+                    if self._engine:
+                        self._engine.stop()
+                except Exception:
+                    pass
+        if self._current_thread and self._current_thread.is_alive():
+            self._current_thread.join(timeout=0.5)
+        self._multiprocess.stop()

@@ -13,6 +13,7 @@ import webrtcvad
 from app.ai.vlm_client import VLMClient
 from app.audio.mic import MicrophoneStream
 from app.audio.tts import SpeechSynthesizer
+from app.audio.tts_pipeline import ConversationStateTracker, TTSManager, TTSResponsePipeline
 from app.audio.agc import AutomaticGainControl, AdaptiveVAD
 from app.route import route_and_respond
 from app.segment import SegmentRecorder, SegmentResult
@@ -76,6 +77,10 @@ class SessionManager:
         self.tts = tts
         self.followup_timeout_ms = followup_timeout_ms
         self.diagnostics = diagnostics or SessionDiagnostics(config)
+        self._tts_pipeline = TTSResponsePipeline(
+            TTSManager(self.tts),
+            ConversationStateTracker(),
+        )
 
         self._cancel_event = threading.Event()
         self._state: SessionState = SessionState.IDLE
@@ -112,6 +117,10 @@ class SessionManager:
         # FIX: CONVERSATION HISTORY - Maintained across all turns in this session
         self._history.clear()
         self._history_tokens = 0
+        self._tts_pipeline = TTSResponsePipeline(
+            TTSManager(self.tts),
+            ConversationStateTracker(),
+        )
 
         turn_index = 0
         end_reason = "unknown"
@@ -338,7 +347,9 @@ class SessionManager:
         audio_logger.info(f"Session Turn {turn_index}: Starting TTS (text length: {len(assistant_text)} chars)")
         
         try:
-            self.tts.speak(assistant_text)
+            result = self._tts_pipeline.speak_text(assistant_text)
+            if result.get("status") != "spoken":
+                audio_logger.debug(f"Session Turn {turn_index}: TTS pipeline status={result.get('status')}")
         except Exception as exc:  # pragma: no cover - safeguard
             callbacks.error(str(exc))
         finally:
@@ -471,6 +482,7 @@ class SessionManager:
         if user_text:
             self._history.append({"role": "user", "text": user_text})
             self._history_tokens += self._estimate_tokens(user_text)
+            self._tts_pipeline.record_user_text(user_text)
         if assistant_text:
             self._history.append({"role": "assistant", "text": assistant_text})
             self._history_tokens += self._estimate_tokens(assistant_text)

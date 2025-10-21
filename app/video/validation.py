@@ -12,7 +12,7 @@ This module provides validation at each pipeline stage.
 import base64
 import io
 import os
-from typing import Tuple
+from typing import Optional, Tuple
 
 import cv2
 import numpy as np
@@ -95,10 +95,29 @@ def validate_image_content(image_path: str) -> Tuple[bool, str]:
         if img.format not in valid_formats:
             return False, f"Unsupported format: {img.format}"
 
-        return True, f"Valid {img.format} {width}x{height}"
+    return True, f"Valid {img.format} {width}x{height}"
 
     except Exception as e:
         return False, f"Validation failed: {str(e)}"
+
+
+def validate_image_for_api(image_path: str) -> Tuple[bool, str]:
+    """
+    Comprehensive validation before sending image to a vision API.
+
+    Combines filesystem checks with deep content validation so callers can
+    catch issues (missing file, zero-byte file, unsupported format, corrupted
+    data) before attempting to encode/submit the image.
+    """
+    path_ok, path_msg = validate_image_path(image_path)
+    if not path_ok:
+        return False, path_msg
+
+    content_ok, content_msg = validate_image_content(image_path)
+    if not content_ok:
+        return False, content_msg
+
+    return True, content_msg
 
 
 def validate_numpy_frame(frame: np.ndarray) -> Tuple[bool, str]:
@@ -214,6 +233,39 @@ def validate_opencv_to_base64(cv_image: np.ndarray) -> Tuple[bool, str, int]:
 
     except Exception as e:
         return False, f"Encoding failed: {str(e)}", 0
+
+
+def encode_pil_to_base64(pil_image, format: str = "JPEG", quality: int = 85) -> Tuple[Optional[str], bool, str]:
+    """Encode PIL Image to base64 string.
+
+    Args:
+        pil_image: PIL Image instance to encode
+        format: Output format (default JPEG)
+        quality: JPEG/WebP quality (0-100)
+
+    Returns:
+        (base64_str, success, message)
+    """
+    if not PIL_AVAILABLE:
+        return None, False, "Pillow not installed"
+
+    try:
+        buffer = io.BytesIO()
+        image_to_save = pil_image
+
+        if format.upper() == "JPEG" and pil_image.mode != "RGB":
+            image_to_save = pil_image.convert("RGB")
+
+        image_to_save.save(buffer, format=format, quality=quality)
+        buffer.seek(0)
+
+        base64_string = base64.b64encode(buffer.getvalue()).decode("utf-8")
+        if not base64_string:
+            return None, False, "Encoded base64 string is empty"
+
+        return base64_string, True, "Success"
+    except Exception as exc:
+        return None, False, f"Exception during encoding: {exc}"
 
 
 def validate_vision_message_format(messages: list, api_type: str = "openai") -> Tuple[bool, str]:

@@ -2,6 +2,9 @@
 __pycache__/
 *.pyc
 models/*.zip
+models/*.zip.*
+models/vosk-model-en-us-*/
+Ai_voice-video_py/
 *.DS_Store
 .env
 *.log

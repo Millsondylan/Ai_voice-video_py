@@ -5,7 +5,7 @@ import os
 import time
 from collections import Counter
 from dataclasses import dataclass
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Sequence
 
 try:  # Optional dependency for noise gating
     import numpy as np
@@ -101,6 +101,7 @@ class StreamingTranscriber:
         self.recognizer = KaldiRecognizer(self.model, sample_rate)
 
         self._configure_recognizer()
+        self._grammar_phrases: Optional[List[str]] = None
 
         self._final_chunks: list[str] = []
         self._partial: str = ""
@@ -121,6 +122,7 @@ class StreamingTranscriber:
     def reset(self) -> None:
         self.recognizer = KaldiRecognizer(self.model, self.sample_rate)
         self._configure_recognizer()
+        self._apply_grammar()
         self._final_chunks.clear()
         self._partial = ""
         self._latest_tokens = []
@@ -214,6 +216,19 @@ class StreamingTranscriber:
         )
         return final_text
 
+    def set_grammar(self, phrases: Optional[Sequence[str]]) -> None:
+        """
+        Restrict recognition vocabulary using Vosk grammars.
+
+        Args:
+            phrases: Iterable of phrases to allow. Pass None or empty to restore full vocabulary.
+        """
+        if phrases:
+            self._grammar_phrases = [str(phrase) for phrase in phrases if phrase]
+        else:
+            self._grammar_phrases = None
+        self._apply_grammar()
+
     # ------------------------------------------------------------------ internals
     def _configure_recognizer(self) -> None:
         """Apply recognizer options based on configuration flags."""
@@ -221,6 +236,18 @@ class StreamingTranscriber:
             self.recognizer.SetWords(True)
         if self._max_alternatives > 0:
             self.recognizer.SetMaxAlternatives(self._max_alternatives)
+
+    def _apply_grammar(self) -> None:
+        """Apply current grammar restrictions to the recognizer."""
+        try:
+            if self._grammar_phrases:
+                grammar = json.dumps(self._grammar_phrases)
+                self.recognizer.SetGrammar(grammar)
+            else:
+                self.recognizer.SetGrammar("")
+        except AttributeError:
+            # Some recognizer drivers do not expose SetGrammar; ignore gracefully.
+            pass
 
     def _resolve_transcription(
         self,

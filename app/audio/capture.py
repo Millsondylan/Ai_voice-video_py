@@ -176,6 +176,7 @@ def run_segment(
     chunk_samples = config.chunk_samples
     frame_ms = max(1, int((chunk_samples / sample_rate) * 1000))
     ring_frames = max(1, int(config.pre_roll_ms / frame_ms))
+    required_silence_frames = max(1, int(config.silence_ms / frame_ms))
 
     noise_gate_threshold = getattr(config, "noise_gate_threshold", 0)
     apply_noise_gate = getattr(config, "apply_noise_gate", True) and noise_gate_threshold > 0
@@ -366,10 +367,13 @@ def run_segment(
             # This prevents stopping on brief pauses or hesitations during speech
             if has_spoken and total_speech_frames >= min_speech_frames:
                 silence_duration_ms = (now_time - last_speech_time) * 1000
-                if silence_duration_ms >= config.silence_ms:
+                if (
+                    silence_duration_ms >= config.silence_ms
+                    and consecutive_silence_frames >= required_silence_frames
+                ):
                     audio_logger.info(
                         f"[VAD→SILENCE] Silence for {silence_duration_ms:.0f}ms "
-                        f"(threshold={config.silence_ms}ms); ending capture"
+                        f"(threshold={config.silence_ms}ms, frames={consecutive_silence_frames}/{required_silence_frames}); ending capture"
                     )
                     stop_reason = "silence"
                     break

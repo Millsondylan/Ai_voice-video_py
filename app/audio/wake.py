@@ -104,6 +104,13 @@ class WakeWordListener(threading.Thread):
             threshold=75  # 75% similarity required for match
         )
 
+        # FIX Problem 7: Restrict Vosk vocabulary to wake word variants for faster detection
+        try:
+            self._wake_grammar = [phrase for phrase in self._wake_variants if phrase] + ["[unk]"]
+            self._transcriber.set_grammar(self._wake_grammar)
+        except AttributeError:
+            self._wake_grammar = None
+
     def stop(self) -> None:
         self._stop_event.set()
         if self._active_mic:
@@ -111,6 +118,10 @@ class WakeWordListener(threading.Thread):
                 self._active_mic.stop()
             except Exception:
                 pass
+        try:
+            self._transcriber.set_grammar(None)
+        except AttributeError:
+            pass
 
     def run(self) -> None:
         """Run wake word detection loop with VAD and buffered pre-roll.
@@ -132,6 +143,11 @@ class WakeWordListener(threading.Thread):
                     # Without this, the wake listener shows leftover transcripts like "what am i holding"
                     self._transcriber.reset()
                     self._transcriber.start()
+                    try:
+                        if getattr(self, "_wake_grammar", None):
+                            self._transcriber.set_grammar(self._wake_grammar)
+                    except AttributeError:
+                        pass
                     self._rolling_buffer.clear()
                     self._match_hits.clear()
                     self._last_speech_time = 0.0
@@ -336,6 +352,10 @@ class WakeWordListener(threading.Thread):
         return False
 
     def _emit_detect(self, buffer_copy: Sequence[bytes]) -> None:
+        try:
+            self._transcriber.set_grammar(None)
+        except AttributeError:
+            pass
         try:
             self._on_detect(buffer_copy)  # type: ignore
         except TypeError:

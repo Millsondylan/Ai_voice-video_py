@@ -13,6 +13,7 @@ from app.segment import SegmentRecorder, SegmentResult
 from app.session_artifacts import SessionArtifactWriter
 from app.util.config import AppConfig
 from app.util.log import get_event_logger, get_structured_logger, logger as audio_logger
+from app.audio.tts_pipeline import ConversationStateTracker, TTSManager, TTSResponsePipeline
 
 
 @dataclass
@@ -46,6 +47,10 @@ class SessionController:
         self.followup_timeout_ms = 15_000
         self._cancel_flag = False
         self._callbacks: Optional[SessionCallbacks] = None
+        self._tts_pipeline = TTSResponsePipeline(
+            TTSManager(self.tts),
+            ConversationStateTracker(),
+        )
 
     # ------------------------------------------------------------------ public api
     def cancel(self) -> None:
@@ -59,6 +64,10 @@ class SessionController:
     ) -> None:
         self._callbacks = callbacks
         self._cancel_flag = False
+        self._tts_pipeline = TTSResponsePipeline(
+            TTSManager(self.tts),
+            ConversationStateTracker(),
+        )
 
         session_id = uuid.uuid4().hex
         callbacks.on_session_started(session_id)
@@ -101,6 +110,7 @@ class SessionController:
                     break
 
                 conversation_history.append({"role": "user", "text": user_text})
+                self._tts_pipeline.record_user_text(user_text)
                 history_tokens += _token_count(user_text)
                 event_logger.set_history_tokens(history_tokens)
 
@@ -130,7 +140,9 @@ class SessionController:
                 event_logger.set_history_tokens(history_tokens)
 
                 self._set_state("Speaking", turn_index)
-                self._speak_text(assistant_text)
+                speak_result = self._speak_text(assistant_text)
+                if speak_result.get("status") != "spoken":
+                    audio_logger.debug(f"TTS pipeline status: {speak_result.get('status')}")
                 callbacks.on_assistant_response(turn_index, assistant_text, response_data or {"text": assistant_text})
 
                 self._set_state("AwaitFollowup", turn_index)
@@ -204,12 +216,14 @@ class SessionController:
                 self._callbacks.on_error(str(exc))
             return None
 
-    def _speak_text(self, text: str) -> None:
+    def _speak_text(self, text: str) -> Dict[str, Any]:
         try:
-            self.tts.speak(text)
+            result = self._tts_pipeline.speak_text(text)
             time.sleep(0.15)
+            return result
         except Exception as exc:  # pragma: no cover
             audio_logger.error("TTS failed: %s", exc)
+            return {"status": "error", "error": str(exc)}
 
     def _await_followup(self) -> tuple[str, Optional[Deque[bytes]]]:
         if self._cancel_flag:

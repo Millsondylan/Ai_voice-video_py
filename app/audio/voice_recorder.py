@@ -23,6 +23,7 @@ class VoiceRecorder:
     - Ring buffer for pre-roll capture (frames BEFORE speech detection)
     - 90% threshold for triggering (robust against noise)
     - Adaptive padding for Bluetooth devices (500ms vs 300ms)
+    - 1.2-second silence detection (40 frames @ 30ms) before ending utterance
     - Correct frame size calculation
     - Single VAD instance (not recreated per frame)
     """
@@ -32,7 +33,8 @@ class VoiceRecorder:
         sample_rate: int = 16000,
         frame_duration_ms: int = 30,
         padding_duration_ms: int = 300,
-        aggressiveness: int = 3,
+        silence_duration_ms: int = 1200,
+        aggressiveness: int = 1,
         is_bluetooth: bool = False,
     ):
         """
@@ -41,8 +43,9 @@ class VoiceRecorder:
         Args:
             sample_rate: Audio sample rate (must be 8000, 16000, 32000, or 48000)
             frame_duration_ms: Frame duration (must be 10, 20, or 30)
-            padding_duration_ms: Silence padding duration (300ms baseline, 500ms for Bluetooth)
-            aggressiveness: VAD aggressiveness 0-3 (3 = most aggressive)
+            padding_duration_ms: Pre-roll padding duration (300ms baseline, 500ms for Bluetooth)
+            silence_duration_ms: Required post-speech silence before stopping (default 1200ms)
+            aggressiveness: VAD aggressiveness 0-3 (lower numbers = more sensitive)
             is_bluetooth: True if using Bluetooth audio device (increases padding)
         """
         self.sample_rate = sample_rate
@@ -58,23 +61,28 @@ class VoiceRecorder:
             logger.info("Bluetooth device detected, using 500ms padding")
 
         # FIX: Single VAD instance - NEVER recreate per frame
-        self.vad = webrtcvad.Vad(aggressiveness)
+        self.vad = webrtcvad.Vad(max(0, min(aggressiveness, 3)))
 
         # FIX: Ring buffer for pre-roll capture
         self.padding_frames = int(padding_duration_ms / frame_duration_ms)
         self.ring_buffer = collections.deque(maxlen=self.padding_frames)
 
+        # FIX Problem 6: Require sustained silence (default 1.2 seconds) before ending
+        self.silence_duration_ms = silence_duration_ms
+        self.silence_frame_target = max(1, int(silence_duration_ms / frame_duration_ms))
+
         # State tracking
         self.triggered = False
         self.voiced_frames = []
+        self.consecutive_silent_frames = 0
 
         # Thresholds for robust detection
         self.trigger_threshold = 0.9  # 90% of ring buffer must contain speech
-        self.detrigger_threshold = 0.9  # 90% must be silence to end
 
         logger.info(
             f"VoiceRecorder initialized: {sample_rate}Hz, {frame_duration_ms}ms frames, "
             f"{padding_duration_ms}ms padding ({self.padding_frames} frames), "
+            f"silence_target={silence_duration_ms}ms ({self.silence_frame_target} frames), "
             f"aggressiveness={aggressiveness}"
         )
 
@@ -114,6 +122,7 @@ class VoiceRecorder:
                 # Copy all frames from ring buffer (includes pre-roll)
                 self.voiced_frames = [f for f, s in self.ring_buffer]
                 self.ring_buffer.clear()
+                self.consecutive_silent_frames = 0
                 logger.debug(
                     f"Speech triggered! Captured {len(self.voiced_frames)} pre-roll frames"
                 )
@@ -123,11 +132,13 @@ class VoiceRecorder:
             self.voiced_frames.append(frame_data)
             self.ring_buffer.append((frame_data, is_speech))
 
-            # Count how many frames in ring buffer are silence
-            num_unvoiced = sum(1 for f, s in self.ring_buffer if not s)
+            if is_speech:
+                self.consecutive_silent_frames = 0
+            else:
+                self.consecutive_silent_frames += 1
 
-            # FIX: Detrigger when 90% of ring buffer frames are silence
-            if num_unvoiced > self.detrigger_threshold * self.ring_buffer.maxlen:
+            # FIX Problem 6: Wait for sustained silence (default 1.2s) before ending
+            if self.consecutive_silent_frames >= self.silence_frame_target:
                 self.triggered = False
                 # Return complete utterance
                 complete_utterance = b''.join(self.voiced_frames)
@@ -135,12 +146,14 @@ class VoiceRecorder:
                 duration_ms = total_frames * self.frame_duration_ms
 
                 logger.info(
-                    f"Speech completed! Captured {total_frames} frames ({duration_ms}ms)"
+                    f"Speech completed! Captured {total_frames} frames ({duration_ms}ms) "
+                    f"after {self.consecutive_silent_frames} silent frames"
                 )
 
                 # Reset state for next utterance
                 self.voiced_frames = []
                 self.ring_buffer.clear()
+                self.consecutive_silent_frames = 0
 
                 return complete_utterance
 
@@ -151,6 +164,7 @@ class VoiceRecorder:
         self.triggered = False
         self.voiced_frames = []
         self.ring_buffer.clear()
+        self.consecutive_silent_frames = 0
         logger.debug("VoiceRecorder reset")
 
     def is_recording(self) -> bool:

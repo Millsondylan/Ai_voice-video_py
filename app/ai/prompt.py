@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import base64
+import os
 import re
 from typing import Dict, List, Optional, Sequence, Tuple
 
@@ -20,6 +21,14 @@ DEFAULT_SYSTEM_PROMPT = (
 
 
 _DATA_URI_RE = re.compile(r"^data:(?P<mime>[\w.+/-]+);base64,(?P<data>.+)$", re.IGNORECASE | re.DOTALL)
+_MIME_MAP = {
+    "jpg": "image/jpeg",
+    "jpeg": "image/jpeg",
+    "png": "image/png",
+    "gif": "image/gif",
+    "webp": "image/webp",
+    "bmp": "image/bmp",
+}
 
 
 def _resolve_api_type(config: AppConfig) -> str:
@@ -40,6 +49,11 @@ def _split_data_uri(image_b64: str) -> Tuple[str, str]:
     if match:
         return match.group("mime"), match.group("data")
     return "image/jpeg", image_b64.strip()
+
+
+def _guess_mime_type(image_path: str) -> str:
+    extension = os.path.splitext(image_path)[1].lower().lstrip(".")
+    return _MIME_MAP.get(extension, "image/jpeg")
 
 
 def _build_history_messages(
@@ -108,6 +122,70 @@ def _build_claude_user_message(transcript: str, images_b64: Sequence[str]) -> Di
     user_text = transcript if transcript else ("Describe the scene succinctly." if cleaned_images else "Hello")
     content.append({"type": "text", "text": user_text})
     return {"role": "user", "content": content}
+
+
+def create_vision_message_from_base64(
+    text_prompt: str,
+    base64_image: str,
+    *,
+    api_type: str = "openai",
+    mime_type: str = "image/jpeg",
+) -> List[Dict[str, object]]:
+    """
+    Create properly formatted vision message for either API using base64 data.
+
+    Args:
+        text_prompt: Text query for the image
+        base64_image: Base64-encoded image data (without data URI prefix)
+        api_type: "openai" or "claude"
+        mime_type: MIME type for the image (default image/jpeg)
+
+    Returns:
+        List of messages ready for submission to the API
+    """
+    normalized_image = f"data:{mime_type};base64,{base64_image.strip()}"
+    api = (api_type or "openai").lower()
+
+    if api == "claude":
+        user_message = _build_claude_user_message(text_prompt, [normalized_image])
+    else:
+        user_message = _build_openai_user_message(text_prompt, [normalized_image])
+
+    messages = [user_message]
+    is_valid, error_msg = validate_vision_message_format(messages, api_type=api)
+    if not is_valid:
+        raise ValueError(f"Invalid {api} vision payload: {error_msg}")
+
+    return messages
+
+
+def create_vision_message(
+    text_prompt: str,
+    image_path: str,
+    *,
+    api_type: str = "openai",
+) -> List[Dict[str, object]]:
+    """
+    Load image from disk and create a properly formatted vision message.
+
+    Args:
+        text_prompt: Text query for the image
+        image_path: Path to the image on disk
+        api_type: "openai" or "claude"
+
+    Returns:
+        List of messages ready for submission to the API
+    """
+    with open(image_path, "rb") as image_file:
+        base64_image = base64.b64encode(image_file.read()).decode("utf-8")
+
+    mime_type = _guess_mime_type(image_path)
+    return create_vision_message_from_base64(
+        text_prompt,
+        base64_image,
+        api_type=api_type,
+        mime_type=mime_type,
+    )
 
 
 def build_system_prompt(config: AppConfig) -> str:
