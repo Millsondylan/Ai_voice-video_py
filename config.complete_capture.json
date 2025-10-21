@@ -1,0 +1,57 @@
+{
+  "_comment": "OPTIMIZED FOR COMPLETE SPEECH AND VIDEO CAPTURE",
+  "_description": "This configuration ensures ALL words are captured with no cutoffs",
+
+  "vosk_model_path": "models/vosk-model-small-en-us-0.15",
+  "camera_source": "0",
+
+  "_comment_silence": "Increased to 1800ms to handle natural pauses between words",
+  "silence_ms": 1800,
+
+  "_comment_max_segment": "Maximum recording duration - 45 seconds for long responses",
+  "max_segment_s": 45,
+
+  "_comment_video": "Video frame capture settings",
+  "frame_sample_fps": 2,
+  "frame_max_images": 6,
+  "video_width_px": 960,
+  "center_crop_ratio": 0.38,
+
+  "_comment_mic": "Microphone configuration",
+  "mic_device_name": null,
+  "sample_rate_hz": 16000,
+  "chunk_samples": 320,
+
+  "_comment_vad": "VAD aggressiveness 1 = most sensitive, catches all speech",
+  "vad_aggressiveness": 1,
+
+  "_comment_pre_roll": "Pre-roll buffer of 600ms captures audio BEFORE wake word",
+  "pre_roll_ms": 600,
+
+  "_comment_min_speech": "Minimum 5 speech frames before allowing silence cutoff",
+  "min_speech_frames": 5,
+
+  "_comment_tail_padding": "Capture extra 500ms after speech ends to avoid cutoffs",
+  "tail_padding_ms": 500,
+
+  "_comment_wake": "Wake word variants for Vosk fallback",
+  "wake_variants": [
+    "hey glasses",
+    "hey-glasses",
+    "hay glasses",
+    "a glasses",
+    "hey glass"
+  ],
+
+  "_comment_wake_sensitivity": "Not used with Porcupine, only for Vosk fallback",
+  "wake_sensitivity": 0.65,
+
+  "_comment_tts": "Text-to-speech settings",
+  "tts_voice": null,
+  "tts_rate": 175,
+
+  "_comment_porcupine": "Porcupine wake word detection (98%+ accuracy)",
+  "prefer_porcupine": true,
+  "porcupine_sensitivity": 0.70,
+  "porcupine_keyword_path": null
+}

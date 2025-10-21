@@ -1,0 +1,45 @@
+{
+  "vosk_model_path": "models/vosk-model-small-en-us-0.15",
+  "camera_source": "0",
+
+  "_comment_silence": "Reduced to 800ms per guide for faster response while still catching full utterances",
+  "silence_ms": 800,
+
+  "_comment_max_segment": "Keep at 45s to allow long queries",
+  "max_segment_s": 45,
+
+  "frame_sample_fps": 2,
+  "frame_max_images": 6,
+  "video_width_px": 960,
+  "center_crop_ratio": 0.38,
+  "mic_device_name": null,
+  "sample_rate_hz": 16000,
+  "chunk_samples": 320,
+
+  "_comment_vad": "VAD aggressiveness 2 is balanced. Try 3 for noisy environments, 1 for quiet",
+  "vad_aggressiveness": 2,
+
+  "_comment_preroll": "Increased to 500ms to ensure capturing first syllable after wake word",
+  "pre_roll_ms": 500,
+
+  "_comment_wake": "Multiple variants help with recognition accuracy",
+  "wake_variants": [
+    "hey glasses",
+    "hey-glasses",
+    "hay glasses",
+    "a glasses",
+    "hey glass"
+  ],
+
+  "_comment_sensitivity": "Not used with Vosk STT-based detection, only for Porcupine",
+  "wake_sensitivity": 0.65,
+
+  "_comment_tts": "Rate 175 is good, adjust 150-200 based on preference",
+  "tts_voice": null,
+  "tts_rate": 175,
+
+  "_comment_porcupine": "Porcupine settings (primary wake word detector, falls back to Vosk)",
+  "prefer_porcupine": true,
+  "porcupine_sensitivity": 0.65,
+  "porcupine_keyword_path": null
+}

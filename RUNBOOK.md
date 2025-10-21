@@ -15,7 +15,7 @@ The diagnostic build captures every session with structured JSON logs and per-tu
   - `model_input.json` – request payload (history + current user message + vision flags).
   - `model_output.txt` – final assistant reply text.
   - `model_output_raw.json` – full VLM response for replaying issues.
-  - `timeline.txt` / `timeline.json` – human-readable and structured timelines filtered to the turn.
+  - `timeline.txt` – human-readable event timeline with absolute timestamps.
   - `turn_meta.json` – stop reason, durations, extra flags (`goodbye`, etc.).
 
 ## Running a Diagnostic Session
