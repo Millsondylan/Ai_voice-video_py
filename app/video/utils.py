@@ -6,6 +6,8 @@ from typing import List
 import cv2
 import numpy as np
 
+from .validation import validate_numpy_frame, validate_opencv_to_base64
+
 
 def center_crop(frame: np.ndarray, ratio: float) -> np.ndarray:
     """
@@ -68,14 +70,30 @@ def frame_to_jpeg_b64(frame: np.ndarray, quality: int = 85) -> str:
 
     Uses JPEG instead of PNG for better compression and token efficiency.
 
+    FIX Problem 8: Added validation to prevent encoding failures.
+
     Args:
         frame: Input video frame (numpy array)
         quality: JPEG quality (0-100, default 85)
 
     Returns:
         Base64-encoded JPEG string
+
+    Raises:
+        RuntimeError: If frame validation or encoding fails
     """
-    # Encode as JPEG
+    # FIX Problem 8: Validate frame before encoding
+    is_valid, msg = validate_numpy_frame(frame)
+    if not is_valid:
+        raise RuntimeError(f"Frame validation failed: {msg}")
+
+    # Encode as JPEG with validation
+    success, error_msg, size_bytes = validate_opencv_to_base64(frame)
+
+    if not success:
+        raise RuntimeError(f"Failed to encode frame: {error_msg}")
+
+    # If validation passed, do actual encoding (already validated above)
     encode_params = [int(cv2.IMWRITE_JPEG_QUALITY), quality]
     success, buffer = cv2.imencode(".jpg", frame, encode_params)
 
@@ -85,6 +103,10 @@ def frame_to_jpeg_b64(frame: np.ndarray, quality: int = 85) -> str:
     # Convert to base64
     jpg_bytes = buffer.tobytes()
     b64_string = base64.b64encode(jpg_bytes).decode("utf-8")
+
+    # Final validation
+    if len(b64_string) == 0:
+        raise RuntimeError("Base64 encoding resulted in empty string")
 
     return b64_string
 

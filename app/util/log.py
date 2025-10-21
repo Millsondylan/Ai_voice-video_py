@@ -227,6 +227,8 @@ class AudioEventLogger:
         self._tts_started_at: Optional[int] = None
         self._tts_done_at: Optional[int] = None
         self._tts_error: Optional[str] = None
+        self._avg_confidence: Optional[float] = None
+        self._low_confidence_words: Optional[List[Dict[str, Any]]] = None
         self._structured = get_structured_logger()
 
     # ---------------------------------------------------------------- context
@@ -297,12 +299,17 @@ class AudioEventLogger:
         stt_final_text: str,
         audio_ms: int,
         stt_ms: int,
+        *,
+        avg_confidence: Optional[float] = None,
+        low_confidence_words: Optional[List[Dict[str, Any]]] = None,
     ) -> None:
         self._segment_stop_at = now_ms()
         self._stop_reason = stop_reason
         self._stt_final_text = stt_final_text
         self._audio_ms_total = audio_ms
         self._stt_ms_total = stt_ms
+        self._avg_confidence = avg_confidence
+        self._low_confidence_words = low_confidence_words
 
         duration_ms = (
             self._segment_stop_at - self._segment_start_at
@@ -310,24 +317,45 @@ class AudioEventLogger:
             else 0
         )
 
-        logger.info(
-            "Segment stopped (reason=%s duration_ms=%s audio_ms=%s stt_ms=%s)",
-            stop_reason,
-            duration_ms,
-            audio_ms,
-            stt_ms,
-        )
-        self._structured.log(
-            "segment.stopped_at",
-            {
-                "segment_stop_ms": self._segment_stop_at,
-                "stop_reason": stop_reason,
-                "duration_ms": duration_ms,
-                "audio_ms": audio_ms,
-                "stt_ms": stt_ms,
-                "stt_final_text": stt_final_text,
-            },
-        )
+        if avg_confidence is not None:
+            logger.info(
+                "Segment stopped (reason=%s duration_ms=%s audio_ms=%s stt_ms=%s avg_conf=%.2f)",
+                stop_reason,
+                duration_ms,
+                audio_ms,
+                stt_ms,
+                avg_confidence,
+            )
+        else:
+            logger.info(
+                "Segment stopped (reason=%s duration_ms=%s audio_ms=%s stt_ms=%s)",
+                stop_reason,
+                duration_ms,
+                audio_ms,
+                stt_ms,
+            )
+
+        payload: Dict[str, Any] = {
+            "segment_stop_ms": self._segment_stop_at,
+            "stop_reason": stop_reason,
+            "duration_ms": duration_ms,
+            "audio_ms": audio_ms,
+            "stt_ms": stt_ms,
+            "stt_final_text": stt_final_text,
+        }
+        if avg_confidence is not None:
+            payload["avg_confidence"] = round(avg_confidence, 3)
+        if low_confidence_words:
+            payload["low_confidence_count"] = len(low_confidence_words)
+            payload["low_confidence_words"] = [
+                {
+                    "word": word_info.get("word"),
+                    "conf": round(float(word_info.get("confidence", 0.0)), 3),
+                }
+                for word_info in low_confidence_words[:5]
+            ]
+
+        self._structured.log("segment.stopped_at", payload)
 
     def log_tts_started(self, text: str) -> None:
         self._tts_started_at = now_ms()
@@ -373,9 +401,30 @@ class AudioEventLogger:
     def log_stt_partial(self, text: str) -> None:
         self._structured.add_partial(text)
 
-    def log_stt_final(self, text: str) -> None:
+    def log_stt_final(
+        self,
+        text: str,
+        confidence: Optional[float] = None,
+        low_confidence_words: Optional[List[Dict[str, Any]]] = None,
+        alternatives: Optional[List[str]] = None,
+    ) -> None:
         self._stt_final_text = text
-        self._structured.record_final(text)
+        payload = {"text": text}
+
+        if confidence is not None:
+            payload["avg_confidence"] = round(confidence, 3)
+
+        if low_confidence_words:
+            payload["low_confidence_count"] = len(low_confidence_words)
+            payload["low_confidence_words"] = [
+                {"word": w["word"], "conf": round(w["confidence"], 2)}
+                for w in low_confidence_words[:5]  # Log first 5 low-confidence words
+            ]
+
+        if alternatives:
+            payload["alternatives"] = alternatives[:5]
+
+        self._structured.log("stt.final_text", payload)
 
     def get_summary(self) -> dict:
         return {
@@ -389,6 +438,8 @@ class AudioEventLogger:
             "tts_started_at": self._tts_started_at,
             "tts_done_at": self._tts_done_at,
             "tts_error": self._tts_error,
+            "avg_confidence": self._avg_confidence,
+            "low_confidence_words": self._low_confidence_words,
         }
 
     def reset(self) -> None:
@@ -402,6 +453,8 @@ class AudioEventLogger:
         self._tts_started_at = None
         self._tts_done_at = None
         self._tts_error = None
+        self._avg_confidence = None
+        self._low_confidence_words = None
 
 
 _event_logger = AudioEventLogger()

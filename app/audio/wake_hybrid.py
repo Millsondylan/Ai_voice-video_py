@@ -41,6 +41,8 @@ class HybridWakeWordManager:
         debounce_ms: int = 700,
         mic_device_name: Optional[str] = None,
         pre_roll_ms: int = 300,
+        wake_vad_level: int = 1,
+        wake_match_window_ms: int = 1200,
         # Porcupine-specific settings
         porcupine_access_key: Optional[str] = None,
         porcupine_keyword_path: Optional[str] = None,
@@ -74,6 +76,8 @@ class HybridWakeWordManager:
         self.debounce_ms = debounce_ms
         self.mic_device_name = mic_device_name
         self.pre_roll_ms = pre_roll_ms
+        self.wake_vad_level = int(max(0, min(3, wake_vad_level)))
+        self.wake_match_window_ms = max(400, wake_match_window_ms)
 
         self.porcupine_access_key = porcupine_access_key or os.getenv("PORCUPINE_ACCESS_KEY")
         self.porcupine_keyword_path = porcupine_keyword_path
@@ -187,6 +191,8 @@ class HybridWakeWordManager:
             debounce_ms=self.debounce_ms,
             mic_device_name=self.mic_device_name,
             pre_roll_ms=self.pre_roll_ms,
+            vad_level=self.wake_vad_level,
+            match_window_ms=self.wake_match_window_ms,
         )
 
     def _map_to_builtin_keyword(self) -> Optional[str]:
@@ -231,6 +237,8 @@ class HybridWakeWordManager:
             "wake_word": self.wake_word,
             "variants": self.wake_variants if self._detection_method == "vosk" else [],
             "sensitivity": self.porcupine_sensitivity if self._detection_method == "porcupine" else None,
+            "wake_vad_level": self.wake_vad_level if self._detection_method == "vosk" else None,
+            "match_window_ms": self.wake_match_window_ms if self._detection_method == "vosk" else None,
             "porcupine_available": PORCUPINE_AVAILABLE,
             "porcupine_configured": self._can_use_porcupine(),
         }
@@ -262,6 +270,8 @@ def create_wake_listener(
         debounce_ms=700,
         mic_device_name=config.mic_device_name,
         pre_roll_ms=config.pre_roll_ms,
+        wake_vad_level=getattr(config, "wake_vad_level", 1),
+        wake_match_window_ms=getattr(config, "wake_match_window_ms", 1200),
         porcupine_access_key=getattr(config, "porcupine_access_key", None),
         porcupine_keyword_path=getattr(config, "porcupine_keyword_path", None),
         porcupine_sensitivity=getattr(config, "porcupine_sensitivity", 0.65),

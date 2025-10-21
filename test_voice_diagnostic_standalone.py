@@ -65,7 +65,7 @@ class Config:
     sample_rate: int = 16000
     
     # Model
-    model_path: str = "models/vosk-model-small-en-us-0.15"
+    model_path: str = "models/vosk-model-en-us-0.22"
     
     # Options
     enable_tts: bool = False
@@ -499,7 +499,7 @@ def main():
     parser = argparse.ArgumentParser(description="Voice Assistant Diagnostics")
     parser.add_argument("--verbose", action="store_true", help="Verbose debug output")
     parser.add_argument("--tts", action="store_true", help="Enable actual TTS (default: simulated)")
-    parser.add_argument("--model", default="models/vosk-model-small-en-us-0.15", help="Vosk model path")
+    parser.add_argument("--model", default="models/vosk-model-en-us-0.22", help="Vosk model path")
     
     args = parser.parse_args()
     

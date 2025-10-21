@@ -13,6 +13,7 @@ import webrtcvad
 from app.ai.vlm_client import VLMClient
 from app.audio.mic import MicrophoneStream
 from app.audio.tts import SpeechSynthesizer
+from app.audio.agc import AutomaticGainControl, AdaptiveVAD
 from app.route import route_and_respond
 from app.segment import SegmentRecorder, SegmentResult
 from app.util.config import AppConfig
@@ -213,15 +214,21 @@ class SessionManager:
 
                 # FIX: AWAIT FOLLOW-UP - After assistant speaks, wait for user's next input
                 # This enables multi-turn conversation without requiring a new wake word
+                from app.util.log import logger as audio_logger
+                audio_logger.info(f"Session Turn {turn_index}: Completed. Awaiting follow-up speech...")
+                
                 next_timeout_ms = None
                 follow_reason, next_pre_roll = self._await_followup(callbacks)
+                
                 if follow_reason != "speech":
                     # User didn't respond within timeout or error occurred
+                    audio_logger.info(f"Session Turn {turn_index}: Follow-up ended with reason: {follow_reason}")
                     end_reason = follow_reason
                     break
 
                 # FIX: CONTINUE CONVERSATION - User is speaking again, process next turn
                 # Set timeout for subsequent turns (15 seconds of silence will end session)
+                audio_logger.info(f"Session Turn {turn_index}: Follow-up speech detected! Starting turn {turn_index + 1}...")
                 next_timeout_ms = self.followup_timeout_ms
                 turn_index += 1
 
@@ -312,13 +319,40 @@ class SessionManager:
         assistant_text: str,
         callbacks: SessionCallbacks,
     ) -> None:
+        """Speak assistant response with detailed timing logs.
+        
+        FIX: CRITICAL TTS DELAY DIAGNOSTIC - Add detailed logging to track
+        TTS delays, especially on 2nd turn where 45-60s delays have been observed.
+        """
+        import time
+        from app.util.log import logger as audio_logger
+        
         self._transition_state(SessionState.SPEAKING, turn_index, callbacks)
         self.diagnostics.timeline_event("Speaking")
+        
+        # FIX: Set turn index on TTS for diagnostic logging
+        self.tts.set_turn_index(turn_index)
+        
+        # FIX: Log timing before and after TTS to identify delays
+        pre_tts_time = time.monotonic()
+        audio_logger.info(f"Session Turn {turn_index}: Starting TTS (text length: {len(assistant_text)} chars)")
+        
         try:
             self.tts.speak(assistant_text)
         except Exception as exc:  # pragma: no cover - safeguard
             callbacks.error(str(exc))
         finally:
+            post_tts_time = time.monotonic()
+            tts_duration_ms = int((post_tts_time - pre_tts_time) * 1000)
+            audio_logger.info(f"Session Turn {turn_index}: TTS completed in {tts_duration_ms}ms")
+            
+            # FIX: Warn if TTS took abnormally long (>10 seconds for normal speech)
+            if tts_duration_ms > 10000:
+                audio_logger.warning(
+                    f"Session Turn {turn_index}: ⚠️  CRITICAL TTS DELAY DETECTED: {tts_duration_ms}ms (>10s)! "
+                    f"This indicates a TTS engine issue."
+                )
+            
             self._transition_state(SessionState.AWAIT_FOLLOWUP, turn_index, callbacks)
             self.diagnostics.timeline_event("Awaiting follow-up")
 
@@ -337,39 +371,70 @@ class SessionManager:
         if self._cancel_event.is_set():
             return "cancel", None
 
-        vad = webrtcvad.Vad(max(0, min(3, self.config.vad_aggressiveness)))
+        # FIX: Use adaptive VAD with stricter detection for follow-ups
+        adaptive_vad = AdaptiveVAD(sample_rate=self.config.sample_rate_hz)
+
+        # FIX: Initialize AGC for follow-up detection (boost quiet speech)
+        agc = AutomaticGainControl(
+            target_rms=6000.0,
+            min_gain=1.0,
+            max_gain=20.0,
+            attack_rate=0.9,
+            release_rate=0.999
+        )
+
         chunk_samples = self.config.chunk_samples
         sample_rate = self.config.sample_rate_hz
         frame_ms = max(1, int((chunk_samples / sample_rate) * 1000))
         ring = collections.deque(maxlen=max(1, int(self.config.pre_roll_ms / frame_ms)))
-        # FIX: Cooldown period to avoid detecting assistant's own voice as follow-up
-        cooldown_end = time.monotonic() + 0.35
+
+        # FIX: LONGER COOLDOWN - Avoid detecting assistant's TTS echo (1.5s instead of 0.35s)
+        cooldown_end = time.monotonic() + 1.5
+
         # FIX: 15-second deadline for follow-up speech
         deadline = time.monotonic() + self.followup_timeout_ms / 1000
+
+        # FIX: REQUIRE CONSECUTIVE SPEECH - Prevent false triggers from noise spikes
+        consecutive_speech_frames = 0
+        required_speech_frames = 10  # 10 frames * 20ms = 200ms of sustained speech
 
         try:
             with MicrophoneStream(
                 rate=sample_rate,
                 chunk_samples=chunk_samples,
                 input_device_name=self.config.mic_device_name,
+                resample_on_mismatch=self.config.resample_on_mismatch,
             ) as mic:
                 while time.monotonic() < deadline:
                     if self._cancel_event.is_set():
                         return "cancel", None
 
-                    frame = mic.read(chunk_samples)
-                    ring.append(frame)
+                    raw_frame = mic.read(chunk_samples)
+                    # FIX: Apply AGC to boost quiet speech
+                    gained_frame = agc.process(raw_frame)
+                    ring.append(gained_frame)
 
                     if time.monotonic() < cooldown_end:
+                        consecutive_speech_frames = 0  # Reset during cooldown
                         continue
 
-                    if vad.is_speech(frame, sample_rate):
-                        pre_frames: List[bytes] = list(ring)
-                        tail_frames = max(1, int(200 / frame_ms))
-                        for _ in range(tail_frames):
-                            pre_frames.append(mic.read(chunk_samples))
-                        self.diagnostics.timeline_event("Follow-up speech detected")
-                        return "speech", pre_frames
+                    # FIX: Use adaptive VAD with gained audio
+                    if adaptive_vad.is_speech(gained_frame):
+                        consecutive_speech_frames += 1
+
+                        # FIX: Only trigger after sustained speech (200ms minimum)
+                        if consecutive_speech_frames >= required_speech_frames:
+                            pre_frames: List[bytes] = list(ring)
+                            tail_frames = max(1, int(200 / frame_ms))
+                            for _ in range(tail_frames):
+                                raw_tail = mic.read(chunk_samples)
+                                gained_tail = agc.process(raw_tail)
+                                pre_frames.append(gained_tail)
+                            self.diagnostics.timeline_event("Follow-up speech detected")
+                            return "speech", pre_frames
+                    else:
+                        # Reset counter when silence detected
+                        consecutive_speech_frames = 0
 
                 self.diagnostics.timeline_event("Follow-up timeout (15s)")
                 return "timeout15", None

@@ -12,6 +12,8 @@ from app.util.log import get_event_logger
 
 from .mic import MicrophoneStream
 from .stt import StreamingTranscriber
+from .agc import AutomaticGainControl, AdaptiveVAD
+from .fuzzy_match import FuzzyWakeWordMatcher
 
 
 class WakeWordListener(threading.Thread):
@@ -44,7 +46,7 @@ class WakeWordListener(threading.Thread):
         mic_device_name: str | None = None,
         pre_roll_ms: int = 300,
         sensitivity: float = 0.65,
-        vad_aggressiveness: int = 2,
+        vad_level: int = 1,
         match_window_ms: int = 1200,
     ) -> None:
         super().__init__(daemon=True)
@@ -73,8 +75,34 @@ class WakeWordListener(threading.Thread):
         self._match_hits: Deque[float] = collections.deque(maxlen=self._required_hits)
         self._speech_reset_ms = max(300, int(pre_roll_ms / 2))
 
-        vad_level = max(0, min(3, int(vad_aggressiveness)))
-        self._vad = webrtcvad.Vad(vad_level)
+        # FIX: Use adaptive VAD with configurable maximum aggressiveness
+        max_vad_level = 3 if vad_level is None else max(0, min(int(vad_level), 3))
+        self._adaptive_vad = AdaptiveVAD(
+            sample_rate=sample_rate,
+            min_level=0,
+            max_level=max_vad_level,
+            initial_level=max_vad_level,
+        )
+
+        # FIX: Use AGC to automatically boost quiet microphones
+        self._agc = AutomaticGainControl(
+            target_rms=6000.0,    # Target normalized level (INCREASED for louder output)
+            min_gain=1.0,         # No reduction
+            max_gain=20.0,        # Up to 20x boost for very quiet mics (INCREASED)
+            attack_rate=0.9,      # Fast gain increase
+            release_rate=0.999    # Slow gain decrease
+        )
+
+        self._last_status_time: float = 0.0
+        self._last_logged_text: str = ""
+        self._last_agc_log_time: float = 0.0
+
+        # FIX Problem 7: Initialize fuzzy matcher for better wake word detection
+        # Uses rapidfuzz with multiple strategies to handle STT misrecognitions
+        self._fuzzy_matcher = FuzzyWakeWordMatcher(
+            wake_words=self._wake_variants_raw,
+            threshold=75  # 75% similarity required for match
+        )
 
     def stop(self) -> None:
         self._stop_event.set()
@@ -100,35 +128,95 @@ class WakeWordListener(threading.Thread):
                     input_device_name=self._mic_device_name,
                 ) as mic:
                     self._active_mic = mic
+                    # FIX: Completely reset transcriber to clear any old text from previous sessions
+                    # Without this, the wake listener shows leftover transcripts like "what am i holding"
+                    self._transcriber.reset()
                     self._transcriber.start()
                     self._rolling_buffer.clear()
                     self._match_hits.clear()
                     self._last_speech_time = 0.0
+                    self._last_status_time = time.monotonic()
+                    self._last_logged_text = ""
 
                     # FIX: Process audio frames continuously, building partial transcripts
                     while not self._stop_event.is_set():
-                        frame = mic.read(self._chunk_samples)
-                        if not frame:
+                        raw_frame = mic.read(self._chunk_samples)
+                        if not raw_frame:
                             continue
 
+                        # FIX: Apply AGC to auto-boost quiet microphones
+                        gained_frame = self._agc.process(raw_frame)
+
                         # FIX: Maintain pre-roll buffer for seamless handoff to capture
-                        self._rolling_buffer.append(frame)
-                        # FIX: Feed to streaming transcriber for partial result detection
-                        self._transcriber.feed(frame)
+                        # Store the gained frame (not raw) so capture gets boosted audio
+                        self._rolling_buffer.append(gained_frame)
 
                         now = time.monotonic()
-                        # FIX: Use VAD to gate wake word checking (only check during speech)
-                        speech_detected = self._vad.is_speech(frame, self._sample_rate)
+
+                        # FIX: DIAGNOSTIC - Print AGC stats every 10 seconds
+                        if (now - self._last_agc_log_time) >= 10.0:
+                            agc_stats = self._agc.get_stats()
+                            vad_level = self._adaptive_vad.get_vad_level()
+                            print(
+                                f"[AGC] Gain: {agc_stats['current_gain']:.2f}x "
+                                f"({agc_stats['current_gain_db']:+.1f}dB) | "
+                                f"RMS: {agc_stats['running_rms']:.0f} → {agc_stats['target_rms']:.0f} | "
+                                f"VAD Level: {vad_level}"
+                            )
+                            self._last_agc_log_time = now
+
+                        # FIX: DIAGNOSTIC - Print status every 3 seconds, but only log meaningful text
+                        # Filter out background noise artifacts (single repeated words like "the")
+                        if (now - self._last_status_time) >= 3.0:
+                            partial_text = self._transcriber.combined_text.strip()
+                            # Only log if text is substantial (more than 3 chars and not just repeated junk)
+                            if partial_text and len(partial_text) > 3 and partial_text != self._last_logged_text:
+                                words = partial_text.split()
+                                # Filter out if it's just repeated "the" or other noise artifacts
+                                if len(words) > 1 or (len(words) == 1 and len(words[0]) > 4):
+                                    print(f"[WAKE] Heard: '{partial_text[:50]}'")
+                                    self._last_logged_text = partial_text
+                            else:
+                                # Only log status if not spamming
+                                if (now - self._last_status_time) >= 10.0:
+                                    print("[WAKE] Listening...")
+                            self._last_status_time = now
+
+                        # FIX: Use adaptive VAD that auto-calibrates to environment
+                        speech_detected = self._adaptive_vad.is_speech(gained_frame)
+
+                        # FIX: ADDITIONAL RMS CHECK - Even if VAD detects "speech", check if it's loud enough
+                        # This prevents Vosk from hallucinating "the" on AGC-boosted silence
+                        # Only feed to STT if RMS is above threshold (real speech after AGC should be loud)
                         if speech_detected:
-                            self._last_speech_time = now
-                            # FIX: Check wake word using partial transcription results
-                            if self._check_wake_word(now):
-                                if self._should_trigger(now):
-                                    logger.log_wake_detected()
-                                    # FIX: Pass pre-roll buffer to prevent missing first syllables
-                                    buffer_copy = list(self._rolling_buffer)
-                                    self._emit_detect(buffer_copy)
-                                    return
+                            import numpy as np
+                            audio_data = np.frombuffer(gained_frame, dtype=np.int16).astype(np.float32)
+                            frame_rms = np.sqrt(np.mean(audio_data**2))
+
+                            # Minimum RMS threshold for real speech after AGC (30% of target)
+                            # Speech should reach ~6000 RMS, so require at least 1800 RMS to feed STT
+                            min_speech_rms = 1800
+
+                            if frame_rms >= min_speech_rms:
+                                self._last_speech_time = now
+                                # FIX: Only feed STT when VAD confirms speech AND RMS is high enough
+                                # This double-check prevents Vosk from hallucinating on boosted silence
+                                self._transcriber.feed(gained_frame)
+
+                                # FIX: Check wake word using partial transcription results
+                                if self._check_wake_word(now):
+                                    if self._should_trigger(now):
+                                        # FIX: DIAGNOSTIC - Log wake word detection with timing
+                                        from app.util.log import logger as audio_logger
+                                        audio_logger.info(
+                                            f"✓ Wake word detected! Transcript: '{self._transcriber.combined_text}' "
+                                            f"Pre-roll buffer: {len(self._rolling_buffer)} frames"
+                                        )
+                                        logger.log_wake_detected()
+                                        # FIX: Pass pre-roll buffer to prevent missing first syllables
+                                        buffer_copy = list(self._rolling_buffer)
+                                        self._emit_detect(buffer_copy)
+                                        return
                         elif self._last_speech_time and (now - self._last_speech_time) * 1000 > self._speech_reset_ms:
                             self._match_hits.clear()
                 self._active_mic = None
@@ -139,11 +227,40 @@ class WakeWordListener(threading.Thread):
             traceback.print_exc()
 
     def _check_wake_word(self, now: float) -> bool:
+        """Check for wake word using both token matching and fuzzy matching.
+
+        FIX Problem 7: Enhanced wake word detection with dual strategy:
+        1. Original token-based matching (preserves existing behavior)
+        2. Fuzzy matching with rapidfuzz (handles misrecognitions)
+
+        This hybrid approach maximizes detection accuracy.
+        """
+        # Strategy 1: Original token-based matching
         tokens = self._recent_tokens()
-        if not tokens:
-            return False
-        match_tokens = self._match_variant(tokens)
-        if not match_tokens:
+        token_match_found = False
+        match_tokens = None
+
+        if tokens:
+            match_tokens = self._match_variant(tokens)
+            if match_tokens:
+                token_match_found = True
+
+        # Strategy 2: Fuzzy matching on full transcript
+        # This catches cases token matching misses (e.g., "diagnosis bible" → "bye glasses")
+        fuzzy_match_found = False
+        full_text = self._transcriber.combined_text.strip()
+        if full_text and len(full_text) > 3:  # Only check meaningful text
+            is_match, matched_word, score = self._fuzzy_matcher.match(full_text)
+            if is_match:
+                fuzzy_match_found = True
+                # Log fuzzy match for debugging
+                from app.util.log import logger as audio_logger
+                audio_logger.info(
+                    f"[FUZZY MATCH] '{full_text}' → '{matched_word}' (score: {score})"
+                )
+
+        # Accept if either strategy found a match
+        if not (token_match_found or fuzzy_match_found):
             return False
 
         self._match_hits.append(now)
@@ -155,7 +272,7 @@ class WakeWordListener(threading.Thread):
             self._match_hits.clear()
             return True
 
-        phrase = " ".join(match_tokens)
+        phrase = " ".join(match_tokens) if match_tokens else full_text
         get_event_logger().log_wake_progress(phrase, hits, self._required_hits, self._match_window_ms)
         return False
 
@@ -189,8 +306,9 @@ class WakeWordListener(threading.Thread):
                 continue
             if len(cand_clean) >= 3 and cand_clean.startswith(target_clean[:3]):
                 continue
-            # Allow close phonetic matches (e.g., "glosses" vs "glasses")
-            if SequenceMatcher(None, cand_clean, target_clean).ratio() >= 0.72:
+            # Allow close phonetic matches (e.g., "glosses" vs "glasses", "hey" vs "the")
+            # FIX: Lowered threshold from 0.72 to 0.65 for more lenient matching
+            if SequenceMatcher(None, cand_clean, target_clean).ratio() >= 0.65:
                 continue
             return False
         return True

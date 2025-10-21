@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import wave
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Sequence
 
@@ -10,6 +10,7 @@ import threading
 from app.audio.capture import SegmentCaptureResult, run_segment
 from app.audio.mic import MicrophoneStream
 from app.audio.stt import StreamingTranscriber
+from app.audio.validation import validate_audio_format
 from app.util.config import AppConfig
 from app.util.fileio import create_temp_segment_dir
 from app.util.log import get_event_logger, logger as audio_logger
@@ -30,6 +31,8 @@ class SegmentResult:
     audio_ms: int
     partial_events: List[Dict[str, Any]]
     final_event: Optional[Dict[str, Any]]
+    average_confidence: Optional[float] = None
+    low_confidence_words: List[Dict[str, Any]] = field(default_factory=list)
 
 
 class SegmentRecorder:
@@ -65,6 +68,7 @@ class SegmentRecorder:
             rate=self.sample_rate,
             chunk_samples=self.config.chunk_samples,
             input_device_name=self.config.mic_device_name,
+            resample_on_mismatch=self.config.resample_on_mismatch,
         ) as mic, VideoCapture(source=self.config.camera_source, width=self.config.video_width_px) as camera:
             ret, frame = camera.read()
             if not ret:
@@ -119,6 +123,8 @@ class SegmentRecorder:
             audio_ms=capture_result.audio_ms,
             partial_events=capture_result.partial_events,
             final_event=capture_result.final_event,
+            average_confidence=capture_result.average_confidence,
+            low_confidence_words=capture_result.low_confidence_words,
         )
 
     def _write_wav(self, path: Path, frames: List[bytes]) -> None:
@@ -136,6 +142,9 @@ class SegmentRecorder:
             wav_file.setsampwidth(2)  # 16-bit PCM
             wav_file.setframerate(self.sample_rate)
             wav_file.writeframes(audio_bytes)
+        is_valid, errors = validate_audio_format(path)
+        if not is_valid:
+            audio_logger.warning("Saved audio failed Vosk validation: %s", "; ".join(errors))
 
     def request_stop(self) -> None:
         """Request the current recording to stop."""

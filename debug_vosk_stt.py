@@ -76,7 +76,7 @@ def test_vosk_simple():
     print("Loading Vosk model...")
 
     try:
-        model = Model("models/vosk-model-small-en-us-0.15")
+        model = Model("models/vosk-model-en-us-0.22")
         print("✅ Model loaded")
     except Exception as e:
         print(f"❌ Failed to load model: {e}")

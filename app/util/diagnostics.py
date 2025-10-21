@@ -13,7 +13,7 @@ from app.util.artifacts import (
     generate_session_summary,
 )
 from app.util.config import AppConfig
-from app.util.log import get_structured_logger
+from app.util.log import get_event_logger, get_structured_logger
 
 
 @dataclass
@@ -208,6 +208,80 @@ class SessionDiagnostics:
             self._current_turn_context.stop_reason = stop_reason
             self._current_turn_context.transcript = transcript
             self._current_turn_context.response_text = response_text
+
+    # -------------------------------------------------------- audio diagnostics
+    def validate_audio(self, audio_path: Path) -> Dict[str, Any]:
+        """Validate audio format and quality.
+
+        Returns dictionary with validation results and recommendations.
+        """
+        try:
+            from app.audio.validation import validate_audio_format, get_audio_info
+            from app.audio.audio_diagnostics import analyze_audio_quality
+
+            is_valid, errors = validate_audio_format(audio_path)
+            info = get_audio_info(audio_path)
+            quality = analyze_audio_quality(audio_path)
+
+            result = {
+                "path": str(audio_path),
+                "format_valid": is_valid,
+                "format_errors": errors,
+                "audio_info": info,
+                "quality_metrics": quality,
+            }
+
+            # Log to timeline if in active turn
+            if self._current_turn_artifacts:
+                if is_valid:
+                    self._current_turn_artifacts.add_timeline_event("✓ Audio format valid for Vosk")
+                else:
+                    self._current_turn_artifacts.add_timeline_event(
+                        f"⚠️ Audio format issues: {len(errors)} error(s)"
+                    )
+
+                if quality.get("warnings"):
+                    for warning in quality["warnings"][:3]:  # Log first 3 warnings
+                        self._current_turn_artifacts.add_timeline_event(warning)
+
+            return result
+
+        except ImportError as e:
+            return {"error": f"Validation tools not available: {e}"}
+        except Exception as e:
+            return {"error": str(e)}
+
+    def log_stt_confidence(
+        self,
+        avg_confidence: float,
+        low_confidence_words: Optional[List[Dict[str, Any]]] = None
+    ) -> None:
+        """Log STT confidence metrics to timeline.
+
+        Args:
+            avg_confidence: Average confidence score (0-1)
+            low_confidence_words: List of low-confidence word dictionaries
+        """
+        if not self._current_turn_artifacts:
+            return
+
+        confidence_pct = int(avg_confidence * 100)
+        if avg_confidence >= 0.8:
+            emoji = "✅"
+        elif avg_confidence >= 0.7:
+            emoji = "⚠️"
+        else:
+            emoji = "❌"
+
+        self._current_turn_artifacts.add_timeline_event(
+            f"{emoji} STT confidence: {confidence_pct}%"
+        )
+
+        if low_confidence_words:
+            word_list = ", ".join([w["word"] for w in low_confidence_words[:5]])
+            self._current_turn_artifacts.add_timeline_event(
+                f"⚠️ Low confidence words ({len(low_confidence_words)}): {word_list}"
+            )
 
     # ----------------------------------------------------------------- internals
     def _sink_callback(self, record: Dict[str, Any]) -> None:

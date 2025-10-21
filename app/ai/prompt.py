@@ -1,9 +1,11 @@
 from __future__ import annotations
 
 import base64
-from typing import Dict, List, Optional
+import re
+from typing import Dict, List, Optional, Sequence, Tuple
 
 from app.util.config import AppConfig
+from app.video.validation import validate_vision_message_format
 
 
 DEFAULT_SYSTEM_PROMPT = (
@@ -15,6 +17,97 @@ DEFAULT_SYSTEM_PROMPT = (
     "• If unclear, ask one short clarifying question.\n"
     "• Don't comment on irrelevant background. Don't identify real people."
 )
+
+
+_DATA_URI_RE = re.compile(r"^data:(?P<mime>[\w.+/-]+);base64,(?P<data>.+)$", re.IGNORECASE | re.DOTALL)
+
+
+def _resolve_api_type(config: AppConfig) -> str:
+    """Determine which vision message schema to generate."""
+    provider = (config.vlm_provider or "").lower()
+    model = (config.vlm_model or "").lower()
+
+    if provider in {"anthropic", "claude"}:
+        return "claude"
+    if "anthropic" in model or model.startswith("claude"):
+        return "claude"
+    return "openai"
+
+
+def _split_data_uri(image_b64: str) -> Tuple[str, str]:
+    """Return (mime_type, base64_data) regardless of data URI presence."""
+    match = _DATA_URI_RE.match(image_b64.strip())
+    if match:
+        return match.group("mime"), match.group("data")
+    return "image/jpeg", image_b64.strip()
+
+
+def _build_history_messages(
+    history: Sequence[Dict[str, str]],
+    *,
+    api_type: str,
+) -> List[Dict[str, object]]:
+    """Convert history turns into API-specific message entries."""
+    messages: List[Dict[str, object]] = []
+    for turn in history:
+        text = turn.get("text", "").strip()
+        if not text:
+            continue
+        role = turn.get("role", "user")
+        if role not in {"user", "assistant"}:
+            role = "user"
+
+        if api_type == "claude":
+            messages.append({"role": role, "content": [{"type": "text", "text": text}]})
+        else:
+            messages.append({"role": role, "content": text})
+    return messages
+
+
+def _build_openai_user_message(transcript: str, images_b64: Sequence[str]) -> Dict[str, object]:
+    """Create OpenAI-formatted user message supporting optional images."""
+    cleaned_images = [img for img in images_b64 if img]
+    user_text = transcript if transcript else ("Describe the scene succinctly." if cleaned_images else "Hello")
+
+    if not cleaned_images:
+        return {"role": "user", "content": user_text}
+
+    content: List[Dict[str, object]] = [{"type": "text", "text": user_text}]
+    for image_b64 in cleaned_images:
+        mime_type, data = _split_data_uri(image_b64)
+        content.append(
+            {
+                "type": "image_url",
+                "image_url": {
+                    "url": f"data:{mime_type};base64,{data}",
+                    "detail": "high",
+                },
+            }
+        )
+    return {"role": "user", "content": content}
+
+
+def _build_claude_user_message(transcript: str, images_b64: Sequence[str]) -> Dict[str, object]:
+    """Create Anthropic Claude-formatted user message with optional images."""
+    cleaned_images = [img for img in images_b64 if img]
+    content: List[Dict[str, object]] = []
+
+    for image_b64 in cleaned_images:
+        mime_type, data = _split_data_uri(image_b64)
+        content.append(
+            {
+                "type": "image",
+                "source": {
+                    "type": "base64",
+                    "media_type": mime_type,
+                    "data": data,
+                },
+            }
+        )
+
+    user_text = transcript if transcript else ("Describe the scene succinctly." if cleaned_images else "Hello")
+    content.append({"type": "text", "text": user_text})
+    return {"role": "user", "content": content}
 
 
 def build_system_prompt(config: AppConfig) -> str:
@@ -31,35 +124,35 @@ def build_vlm_payload(
     transcript_clean = transcript.strip()
     history = history or []
 
+    api_type = _resolve_api_type(config)
+
     if config.vlm_model:
-        messages = []
+        messages: List[Dict[str, object]] = []
+
+        if api_type == "claude":
+            if system_prompt:
+                messages.append({"role": "system", "content": [{"type": "text", "text": system_prompt}]})
+
+            messages.extend(_build_history_messages(history, api_type=api_type))
+            messages.append(_build_claude_user_message(transcript_clean, images_b64))
+
+            is_valid, error_msg = validate_vision_message_format(messages, api_type=api_type)
+            if not is_valid:
+                raise ValueError(f"Invalid Claude vision payload: {error_msg}")
+
+            return {"model": config.vlm_model, "messages": messages}
+
+        # Default to OpenAI / OpenRouter schema
         if system_prompt:
-            messages.append({"role": "system", "content": [{"type": "text", "text": system_prompt}]})
+            messages.append({"role": "system", "content": system_prompt})
 
-        for turn in history:
-            text = turn.get("text", "").strip()
-            if not text:
-                continue
-            role = turn.get("role", "user")
-            if role not in {"user", "assistant"}:
-                role = "user"
-            messages.append({"role": role, "content": [{"type": "text", "text": text}]})
+        messages.extend(_build_history_messages(history, api_type="openai"))
+        messages.append(_build_openai_user_message(transcript_clean, images_b64))
 
-        user_content = []
-        if transcript_clean:
-            user_content.append({"type": "text", "text": transcript_clean})
-        else:
-            # Only ask for scene description if images are provided
-            if images_b64:
-                user_content.append({"type": "text", "text": "Describe the scene succinctly."})
-            else:
-                user_content.append({"type": "text", "text": "Hello"})
+        is_valid, error_msg = validate_vision_message_format(messages, api_type="openai")
+        if not is_valid:
+            raise ValueError(f"Invalid OpenAI vision payload: {error_msg}")
 
-        # Only add images if the list is non-empty
-        if images_b64:
-            user_content.extend({"type": "input_image", "image_base64": img} for img in images_b64)
-
-        messages.append({"role": "user", "content": user_content})
         return {"model": config.vlm_model, "messages": messages}
 
     history_lines: List[str] = []

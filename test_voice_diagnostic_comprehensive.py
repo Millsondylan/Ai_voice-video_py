@@ -84,7 +84,7 @@ class DiagnosticConfig:
     mic_device_index: Optional[int] = None
     
     # Vosk model
-    model_path: str = "models/vosk-model-small-en-us-0.15"
+    model_path: str = "models/vosk-model-en-us-0.22"
     
     # TTS settings
     enable_tts_output: bool = False  # Set to True to actually speak
@@ -805,7 +805,7 @@ def main():
     )
     parser.add_argument(
         "--model",
-        default="models/vosk-model-small-en-us-0.15",
+        default="models/vosk-model-en-us-0.22",
         help="Path to Vosk model",
     )
     

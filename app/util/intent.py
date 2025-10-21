@@ -6,11 +6,15 @@ import re
 # Vision-related intent patterns
 DEICTIC_PATTERNS = [
     r"\bwhat\s+is\s+(this|that)\b",
+    r"\bwhat\s+am\s+i\s+(holding|looking\s+at)\b",
+    r"\bcan\s+you\s+see\s+what\s+i'?m\s+(holding|doing)\b",
     r"\blook\s+at\b",
     r"\bsee\s+(this|that)\b",
     r"\bidentify\b",
     r"\bis\s+this\b",
     r"\bshow\s+me\b",
+    r"\bshow\s+what\s+i'?m\s+(holding|doing)\b",
+    r"\bdescribe\s+(this|that|what\s+i'?m\s+holding)\b",
     r"\bwhat\s+(color|shape|size)\b",
     r"\bwhere\s+is\b",
     r"\bhow\s+many\b",
@@ -43,6 +47,46 @@ CHAT_PATTERNS = [
     r"^\s*(bye|goodbye|see\s+ya)\b",
 ]
 
+# Leading greeting prefixes that should be ignored when evaluating intent.
+CHAT_PREFIX_PATTERNS = [
+    r"^\s*(hi|hello|hey|howdy|greetings)\b",
+    r"^\s*good\s+(morning|afternoon|evening|night)\b",
+    r"^\s*(thanks|thank\s+you|thx)\b",
+    r"^\s*(bye|goodbye|see\s+ya)\b",
+]
+
+
+def _matches_patterns(text: str, patterns: list[str]) -> bool:
+    """Return True if any regex in patterns matches text (case-insensitive)."""
+    for pattern in patterns:
+        if re.search(pattern, text, flags=re.IGNORECASE):
+            return True
+    return False
+
+
+def _strip_leading_greeting(text: str) -> tuple[str, bool]:
+    """Strip leading greeting phrases and punctuation from text."""
+    for pattern in CHAT_PREFIX_PATTERNS:
+        match = re.match(pattern, text, flags=re.IGNORECASE)
+        if match:
+            remainder = text[match.end():]
+            remainder = remainder.lstrip(" ,.!?-")
+            return remainder, True
+    return text, False
+
+
+def _is_chat_only(text: str) -> bool:
+    """Return True if text is purely chat/greeting with no extra content."""
+    normalized = text.strip()
+    if not normalized:
+        return True
+
+    for pattern in CHAT_PATTERNS:
+        extended_pattern = f"{pattern}(?:[\\s,.!?]*)$"
+        if re.fullmatch(extended_pattern, normalized, flags=re.IGNORECASE):
+            return True
+    return False
+
 
 def wants_vision(transcript: str) -> bool:
     """
@@ -66,21 +110,18 @@ def wants_vision(transcript: str) -> bool:
         return False
 
     text_lower = transcript.lower().strip()
+    no_greeting_text, _ = _strip_leading_greeting(text_lower)
 
-    # Explicitly reject chat/greeting patterns
-    for pattern in CHAT_PATTERNS:
-        if re.search(pattern, text_lower):
-            return False
+    def needs_vision(candidate: str) -> bool:
+        return _matches_patterns(candidate, DEICTIC_PATTERNS) or _matches_patterns(candidate, OCR_PATTERNS)
 
-    # Check for deictic (pointing/identifying) patterns
-    for pattern in DEICTIC_PATTERNS:
-        if re.search(pattern, text_lower):
-            return True
+    # Evaluate both the original text and the greeting-stripped text.
+    if needs_vision(text_lower) or needs_vision(no_greeting_text):
+        return True
 
-    # Check for OCR/reading patterns
-    for pattern in OCR_PATTERNS:
-        if re.search(pattern, text_lower):
-            return True
+    # If the user only greeted or made small talk, treat as non-vision.
+    if _is_chat_only(text_lower):
+        return False
 
     # Default conservatively: no vision unless clearly requested
     return False

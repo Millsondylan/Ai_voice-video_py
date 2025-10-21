@@ -1,24 +1,43 @@
 from __future__ import annotations
 
 import re
+from typing import Optional
 
 
-# Scene-related prefixes that should be stripped when no images are sent
+# Scene-related prefixes that should be stripped when no images are sent.
+# We keep patterns lightweight (no anchors) and add shared trailing punctuation
+# handling in code so we can strip phrases like "I see", "From the image,"
+# or even just "I see" with no trailing whitespace.
 SCENE_PREFACE_PATTERNS = [
-    r"^I see\s+",
-    r"^From the image[s]?,?\s+",
-    r"^In the (photo|picture|image)[s]?,?\s+",
-    r"^Looking at (the )?(image|photo|picture)[s]?,?\s+",
-    r"^Based on the (image|photo|picture)[s]?,?\s+",
-    r"^The image shows\s+",
-    r"^The (photo|picture) shows\s+",
-    r"^I can see\s+",
-    r"^From what I can see,?\s+",
-    r"^In this (image|photo|picture),?\s+",
+    r"I see",
+    r"From the image(?:s)?",
+    r"In the (?:photo|picture|image)(?:s)?",
+    r"Looking at (?:the )?(?:image|photo|picture)(?:s)?",
+    r"Based on the (?:image|photo|picture)(?:s)?",
+    r"The image shows",
+    r"The (?:photo|picture) shows",
+    r"I can see",
+    r"From what I can see",
+    r"In this (?:image|photo|picture)",
 ]
 
 
-def strip_scene_preface(text: str) -> str:
+def _strip_preface(text: str) -> tuple[str, bool]:
+    """Return text without a recognised scene preface and whether one was removed."""
+    stripped = text.lstrip()
+    for pattern in SCENE_PREFACE_PATTERNS:
+        # Allow trailing whitespace or punctuation such as comma, colon, dash, period.
+        match = re.match(
+            rf"(?is)^{pattern}(?:[\s,.:;-]+|$)",
+            stripped,
+        )
+        if match:
+            without = stripped[match.end():]
+            return without.lstrip(), True
+    return stripped, False
+
+
+def strip_scene_preface(text: Optional[str]) -> Optional[str]:
     """
     Remove accidental scene-related prefixes from VLM responses.
 
@@ -37,15 +56,14 @@ def strip_scene_preface(text: str) -> str:
     Returns:
         Text with scene prefixes removed, preserving the rest of the content
     """
-    if not text:
+    if text is None:
         return text
 
-    stripped = text
-    for pattern in SCENE_PREFACE_PATTERNS:
-        stripped = re.sub(pattern, "", stripped, flags=re.IGNORECASE)
-        # Only apply the first matching pattern
-        if stripped != text:
-            break
+    stripped, removed = _strip_preface(text)
+
+    # If nothing left (preface-only), just return empty string.
+    if not stripped:
+        return ""
 
     # Capitalize first letter if needed
     if stripped and stripped[0].islower():

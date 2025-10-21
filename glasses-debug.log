@@ -26,3 +26,728 @@ INFO:root:check append
 [2025-10-20 23:06:04] glasses.audio - INFO - Segment stopped (reason=silence duration_ms=8341 audio_ms=4220 stt_ms=7444)
 [2025-10-20 23:06:04] glasses.audio - INFO - Captured audio bytes=135040 stop_reason=silence duration_ms=7442
 [2025-10-20 23:06:04] glasses.audio - INFO - TTS started len=23
+[2025-10-20 23:56:02] glasses.audio - INFO - ✅ Using Vosk STT wake word detection (variants=3)
+[2025-10-20 23:56:02] glasses.audio - INFO - Wake word detection info: {'method': 'vosk', 'wake_word': 'hey glasses', 'variants': ['hey glasses', 'hey-glasses', 'hay glasses'], 'sensitivity': None, 'porcupine_available': False, 'porcupine_configured': False}
+[2025-10-20 23:56:14] glasses.audio - INFO - Segment recording started (vad=1 silence_ms=1200 chunk_ms=20 pre_roll_ms=500)
+[2025-10-20 23:56:17] glasses.audio - INFO - VAD detected speech during pre-roll; capturing segment
+[2025-10-20 23:56:17] glasses.audio - INFO - Segment stopped (reason=manual duration_ms=2724 audio_ms=500 stt_ms=1007)
+[2025-10-20 23:56:17] glasses.audio - INFO - Captured audio bytes=16000 stop_reason=manual duration_ms=79
+[2025-10-20 23:56:18] glasses.audio - INFO - ✅ Using Vosk STT wake word detection (variants=3)
+[2025-10-20 23:56:18] glasses.audio - INFO - Wake word detection info: {'method': 'vosk', 'wake_word': 'hey glasses', 'variants': ['hey glasses', 'hey-glasses', 'hay glasses'], 'sensitivity': None, 'porcupine_available': False, 'porcupine_configured': False}
+[2025-10-20 23:56:23] glasses.audio - INFO - Segment recording started (vad=1 silence_ms=1200 chunk_ms=20 pre_roll_ms=500)
+[2025-10-20 23:56:25] glasses.audio - INFO - VAD detected speech during pre-roll; capturing segment
+[2025-10-20 23:56:28] glasses.audio - INFO - Added 300ms tail padding (15 frames)
+[2025-10-20 23:56:28] glasses.audio - INFO - Segment stopped (reason=silence duration_ms=4255 audio_ms=1040 stt_ms=2693)
+[2025-10-20 23:56:28] glasses.audio - INFO - Captured audio bytes=33280 stop_reason=silence duration_ms=2256
+[2025-10-20 23:56:29] glasses.audio - INFO - ✅ Using Vosk STT wake word detection (variants=3)
+[2025-10-20 23:56:29] glasses.audio - INFO - Wake word detection info: {'method': 'vosk', 'wake_word': 'hey glasses', 'variants': ['hey glasses', 'hey-glasses', 'hay glasses'], 'sensitivity': None, 'porcupine_available': False, 'porcupine_configured': False}
+[2025-10-20 23:58:17] glasses.audio - INFO - Segment recording started (vad=1 silence_ms=1800 chunk_ms=20 pre_roll_ms=600)
+[2025-10-20 23:58:19] glasses.audio - INFO - VAD detected speech during pre-roll; capturing segment
+[2025-10-20 23:58:37] glasses.audio - INFO - Added 500ms tail padding (25 frames)
+[2025-10-20 23:58:37] glasses.audio - INFO - Segment stopped (reason=silence duration_ms=20105 audio_ms=18960 stt_ms=19437)
+[2025-10-21 00:03:41] glasses.audio - WARNING - ⚠️  Porcupine initialization failed: Wake word 'hey glasses' not a built-in keyword. Provide porcupine_keyword_path for custom wake word, or use Vosk fallback.
+[2025-10-21 00:03:41] glasses.audio - INFO - Falling back to Vosk STT-based detection...
+[2025-10-21 00:03:41] glasses.audio - INFO - ✅ Using Vosk STT wake word detection (variants=5)
+[2025-10-21 00:03:41] glasses.audio - INFO - Wake word detection info: {'method': 'vosk', 'wake_word': 'hey glasses', 'variants': ['hey glasses', 'hey-glasses', 'hay glasses', 'a glasses', 'hey glass'], 'sensitivity': None, 'porcupine_available': True, 'porcupine_configured': True}
+[2025-10-21 00:03:48] glasses.audio - INFO - Segment recording started (vad=1 silence_ms=1800 chunk_ms=20 pre_roll_ms=600)
+[2025-10-21 00:03:52] glasses.audio - INFO - VAD detected speech during pre-roll; capturing segment
+[2025-10-21 00:03:56] glasses.audio - INFO - Added 500ms tail padding (25 frames)
+[2025-10-21 00:03:56] glasses.audio - INFO - Segment stopped (reason=silence duration_ms=7679 audio_ms=1620 stt_ms=5206)
+[2025-10-21 00:03:57] glasses.audio - INFO - Captured audio bytes=51840 stop_reason=silence duration_ms=3980
+[2025-10-21 00:03:59] glasses.audio - WARNING - ⚠️  Porcupine initialization failed: Wake word 'hey glasses' not a built-in keyword. Provide porcupine_keyword_path for custom wake word, or use Vosk fallback.
+[2025-10-21 00:03:59] glasses.audio - INFO - Falling back to Vosk STT-based detection...
+[2025-10-21 00:03:59] glasses.audio - INFO - ✅ Using Vosk STT wake word detection (variants=5)
+[2025-10-21 00:03:59] glasses.audio - INFO - Wake word detection info: {'method': 'vosk', 'wake_word': 'hey glasses', 'variants': ['hey glasses', 'hey-glasses', 'hay glasses', 'a glasses', 'hey glass'], 'sensitivity': None, 'porcupine_available': True, 'porcupine_configured': True}
+[2025-10-21 00:08:24] glasses.audio - WARNING - ⚠️  Porcupine initialization failed: Wake word 'hey glasses' not a built-in keyword. Provide porcupine_keyword_path for custom wake word, or use Vosk fallback.
+[2025-10-21 00:08:24] glasses.audio - INFO - Falling back to Vosk STT-based detection...
+[2025-10-21 00:08:24] glasses.audio - INFO - ✅ Using Vosk STT wake word detection (variants=5)
+[2025-10-21 00:08:24] glasses.audio - INFO - Wake word detection info: {'method': 'vosk', 'wake_word': 'hey glasses', 'variants': ['hey glasses', 'hey-glasses', 'hay glasses', 'a glasses', 'hey glass'], 'sensitivity': None, 'porcupine_available': True, 'porcupine_configured': True}
+[2025-10-21 00:08:31] glasses.audio - INFO - Segment recording started (vad=1 silence_ms=1800 chunk_ms=20 pre_roll_ms=600)
+[2025-10-21 00:08:35] glasses.audio - INFO - VAD detected speech during pre-roll; capturing segment
+[2025-10-21 00:08:39] glasses.audio - INFO - Added 500ms tail padding (25 frames)
+[2025-10-21 00:08:39] glasses.audio - INFO - Segment stopped (reason=silence duration_ms=7627 audio_ms=1640 stt_ms=5477)
+[2025-10-21 00:08:40] glasses.audio - INFO - Captured audio bytes=52480 stop_reason=silence duration_ms=4304
+[2025-10-21 00:08:42] glasses.audio - WARNING - ⚠️  Porcupine initialization failed: Wake word 'hey glasses' not a built-in keyword. Provide porcupine_keyword_path for custom wake word, or use Vosk fallback.
+[2025-10-21 00:08:42] glasses.audio - INFO - Falling back to Vosk STT-based detection...
+[2025-10-21 00:08:42] glasses.audio - INFO - ✅ Using Vosk STT wake word detection (variants=5)
+[2025-10-21 00:08:42] glasses.audio - INFO - Wake word detection info: {'method': 'vosk', 'wake_word': 'hey glasses', 'variants': ['hey glasses', 'hey-glasses', 'hay glasses', 'a glasses', 'hey glass'], 'sensitivity': None, 'porcupine_available': True, 'porcupine_configured': True}
+[2025-10-21 00:11:28] glasses.audio - INFO - Segment recording started (vad=1 silence_ms=1800 chunk_ms=20 pre_roll_ms=600)
+[2025-10-21 00:11:29] glasses.audio - INFO - VAD detected speech during pre-roll; capturing segment
+[2025-10-21 00:11:40] glasses.audio - INFO - Added 500ms tail padding (25 frames)
+[2025-10-21 00:11:40] glasses.audio - INFO - Segment stopped (reason=silence duration_ms=11619 audio_ms=10740 stt_ms=10786)
+[2025-10-21 00:13:44] glasses.audio - WARNING - ⚠️  Porcupine initialization failed: Wake word 'hey glasses' not a built-in keyword. Provide porcupine_keyword_path for custom wake word, or use Vosk fallback.
+[2025-10-21 00:13:44] glasses.audio - INFO - Falling back to Vosk STT-based detection...
+[2025-10-21 00:13:44] glasses.audio - INFO - ✅ Using Vosk STT wake word detection (variants=5)
+[2025-10-21 00:13:44] glasses.audio - INFO - Wake word detection info: {'method': 'vosk', 'wake_word': 'hey glasses', 'variants': ['hey glasses', 'hey-glasses', 'hay glasses', 'a glasses', 'hey glass'], 'sensitivity': None, 'porcupine_available': True, 'porcupine_configured': True}
+[2025-10-21 00:13:50] glasses.audio - INFO - Wake word detected
+[2025-10-21 00:13:53] glasses.audio - INFO - Segment recording started (vad=1 silence_ms=1800 chunk_ms=20 pre_roll_ms=600)
+[2025-10-21 00:13:54] glasses.audio - INFO - VAD detected speech during pre-roll; capturing segment
+[2025-10-21 00:13:59] glasses.audio - INFO - Added 500ms tail padding (25 frames)
+[2025-10-21 00:13:59] glasses.audio - INFO - Segment stopped (reason=silence duration_ms=6386 audio_ms=2300 stt_ms=6121)
+[2025-10-21 00:14:00] glasses.audio - INFO - Captured audio bytes=73600 stop_reason=silence duration_ms=5126
+[2025-10-21 00:14:03] glasses.audio - WARNING - ⚠️  Porcupine initialization failed: Wake word 'hey glasses' not a built-in keyword. Provide porcupine_keyword_path for custom wake word, or use Vosk fallback.
+[2025-10-21 00:14:03] glasses.audio - INFO - Falling back to Vosk STT-based detection...
+[2025-10-21 00:14:03] glasses.audio - INFO - ✅ Using Vosk STT wake word detection (variants=5)
+[2025-10-21 00:14:03] glasses.audio - INFO - Wake word detection info: {'method': 'vosk', 'wake_word': 'hey glasses', 'variants': ['hey glasses', 'hey-glasses', 'hay glasses', 'a glasses', 'hey glass'], 'sensitivity': None, 'porcupine_available': True, 'porcupine_configured': True}
+[2025-10-21 07:08:00] glasses.audio - WARNING - ⚠️  Porcupine initialization failed: Wake word 'hey glasses' not a built-in keyword. Provide porcupine_keyword_path for custom wake word, or use Vosk fallback.
+[2025-10-21 07:08:00] glasses.audio - INFO - Falling back to Vosk STT-based detection...
+[2025-10-21 07:08:00] glasses.audio - INFO - ✅ Using Vosk STT wake word detection (variants=5)
+[2025-10-21 07:08:00] glasses.audio - INFO - Wake word detection info: {'method': 'vosk', 'wake_word': 'hey glasses', 'variants': ['hey glasses', 'hey-glasses', 'hay glasses', 'a glasses', 'hey glass'], 'sensitivity': None, 'porcupine_available': True, 'porcupine_configured': True}
+[2025-10-21 07:08:23] glasses.audio - INFO - Wake word detected
+[2025-10-21 07:08:27] glasses.audio - INFO - Segment recording started (vad=1 silence_ms=1800 chunk_ms=20 pre_roll_ms=600)
+[2025-10-21 07:08:27] glasses.audio - INFO - VAD detected speech during pre-roll; capturing segment
+[2025-10-21 07:08:33] glasses.audio - INFO - Added 500ms tail padding (25 frames)
+[2025-10-21 07:08:34] glasses.audio - INFO - Segment stopped (reason=silence duration_ms=6753 audio_ms=2560 stt_ms=6610)
+[2025-10-21 07:08:34] glasses.audio - INFO - Captured audio bytes=81920 stop_reason=silence duration_ms=6614
+[2025-10-21 07:08:37] glasses.audio - WARNING - ⚠️  Porcupine initialization failed: Wake word 'hey glasses' not a built-in keyword. Provide porcupine_keyword_path for custom wake word, or use Vosk fallback.
+[2025-10-21 07:08:37] glasses.audio - INFO - Falling back to Vosk STT-based detection...
+[2025-10-21 07:08:37] glasses.audio - INFO - ✅ Using Vosk STT wake word detection (variants=5)
+[2025-10-21 07:08:37] glasses.audio - INFO - Wake word detection info: {'method': 'vosk', 'wake_word': 'hey glasses', 'variants': ['hey glasses', 'hey-glasses', 'hay glasses', 'a glasses', 'hey glass'], 'sensitivity': None, 'porcupine_available': True, 'porcupine_configured': True}
+[2025-10-21 07:10:41] glasses.audio - WARNING - ⚠️  Porcupine initialization failed: Wake word 'hey glasses' not a built-in keyword. Provide porcupine_keyword_path for custom wake word, or use Vosk fallback.
+[2025-10-21 07:10:41] glasses.audio - INFO - Falling back to Vosk STT-based detection...
+[2025-10-21 07:10:41] glasses.audio - INFO - ✅ Using Vosk STT wake word detection (variants=5)
+[2025-10-21 07:10:41] glasses.audio - INFO - Wake word detection info: {'method': 'vosk', 'wake_word': 'hey glasses', 'variants': ['hey glasses', 'hey-glasses', 'hay glasses', 'a glasses', 'hey glass'], 'sensitivity': None, 'porcupine_available': True, 'porcupine_configured': True}
+[2025-10-21 08:14:47] glasses.audio - WARNING - ⚠️  Porcupine initialization failed: Wake word 'hey glasses' not a built-in keyword. Provide porcupine_keyword_path for custom wake word, or use Vosk fallback.
+[2025-10-21 08:14:47] glasses.audio - INFO - Falling back to Vosk STT-based detection...
+[2025-10-21 08:14:47] glasses.audio - INFO - ✅ Using Vosk STT wake word detection (variants=5)
+[2025-10-21 08:14:47] glasses.audio - INFO - Wake word detection info: {'method': 'vosk', 'wake_word': 'hey glasses', 'variants': ['hey glasses', 'hey-glasses', 'hay glasses', 'a glasses', 'hey glass'], 'sensitivity': None, 'porcupine_available': True, 'porcupine_configured': True}
+[2025-10-21 08:15:11] glasses.audio - INFO - Segment recording started (vad=1 silence_ms=1800 chunk_ms=20 pre_roll_ms=600)
+[2025-10-21 08:15:13] glasses.audio - INFO - VAD detected speech during pre-roll; capturing segment
+[2025-10-21 08:15:16] glasses.audio - INFO - Added 500ms tail padding (25 frames)
+[2025-10-21 08:15:18] glasses.audio - INFO - Segment stopped (reason=silence duration_ms=6842 audio_ms=1520 stt_ms=5617)
+[2025-10-21 08:15:19] glasses.audio - INFO - Captured audio bytes=48640 stop_reason=silence duration_ms=5614
+[2025-10-21 08:15:19] glasses.audio - WARNING - ⚠️  Porcupine initialization failed: Wake word 'hey glasses' not a built-in keyword. Provide porcupine_keyword_path for custom wake word, or use Vosk fallback.
+[2025-10-21 08:15:19] glasses.audio - INFO - Falling back to Vosk STT-based detection...
+[2025-10-21 08:15:19] glasses.audio - INFO - ✅ Using Vosk STT wake word detection (variants=5)
+[2025-10-21 08:15:19] glasses.audio - INFO - Wake word detection info: {'method': 'vosk', 'wake_word': 'hey glasses', 'variants': ['hey glasses', 'hey-glasses', 'hay glasses', 'a glasses', 'hey glass'], 'sensitivity': None, 'porcupine_available': True, 'porcupine_configured': True}
+[2025-10-21 08:20:32] glasses.audio - INFO - TTS started len=35
+[2025-10-21 08:20:35] glasses.audio - INFO - TTS completed in 3024 ms
+[2025-10-21 08:20:35] glasses.audio - INFO - TTS completed successfully in 3023ms
+[2025-10-21 08:20:46] glasses.audio - INFO - TTS started len=35
+[2025-10-21 08:20:48] glasses.audio - INFO - TTS completed in 2674 ms
+[2025-10-21 08:20:48] glasses.audio - INFO - TTS completed successfully in 2673ms
+[2025-10-21 08:21:08] glasses.audio - INFO - TTS started len=8
+[2025-10-21 08:21:08] glasses.audio - INFO - TTS completed in 8 ms
+[2025-10-21 08:21:08] glasses.audio - INFO - TTS completed successfully in 7ms
+[2025-10-21 08:21:08] glasses.audio - INFO - TTS started len=8
+[2025-10-21 08:21:08] glasses.audio - INFO - TTS completed in 3 ms
+[2025-10-21 08:21:08] glasses.audio - INFO - TTS completed successfully in 3ms
+[2025-10-21 08:21:08] glasses.audio - INFO - TTS started len=10
+[2025-10-21 08:21:08] glasses.audio - INFO - TTS completed in 7 ms
+[2025-10-21 08:21:08] glasses.audio - INFO - TTS completed successfully in 6ms
+[2025-10-21 08:21:08] glasses.audio - INFO - TTS started len=14
+[2025-10-21 08:21:08] glasses.audio - INFO - TTS completed in 2 ms
+[2025-10-21 08:21:08] glasses.audio - INFO - TTS completed successfully in 2ms
+[2025-10-21 08:21:08] glasses.audio - INFO - TTS started len=14
+[2025-10-21 08:21:08] glasses.audio - INFO - TTS completed in 1 ms
+[2025-10-21 08:21:08] glasses.audio - INFO - TTS completed successfully in 1ms
+[2025-10-21 08:21:08] glasses.audio - INFO - TTS started len=16
+[2025-10-21 08:21:08] glasses.audio - INFO - TTS completed in 2 ms
+[2025-10-21 08:21:08] glasses.audio - INFO - TTS completed successfully in 2ms
+[2025-10-21 08:21:27] glasses.audio - INFO - Wake word detected
+[2025-10-21 08:21:27] glasses.audio - INFO - Segment recording started (vad=1 silence_ms=1800 chunk_ms=20 pre_roll_ms=600)
+[2025-10-21 08:21:27] glasses.audio - INFO - Segment stopped (reason=test duration_ms=23 audio_ms=1000 stt_ms=900)
+[2025-10-21 08:21:27] glasses.audio - INFO - TTS started len=4
+[2025-10-21 08:21:27] glasses.audio - INFO - TTS completed in 20 ms
+[2025-10-21 08:22:30] glasses.audio - INFO - Segment recording started (vad=1 silence_ms=1800 chunk_ms=20 pre_roll_ms=600)
+[2025-10-21 08:22:31] glasses.audio - INFO - VAD detected speech during pre-roll; capturing segment
+[2025-10-21 08:22:35] glasses.audio - INFO - Added 500ms tail padding (25 frames)
+[2025-10-21 08:22:35] glasses.audio - INFO - Segment stopped (reason=silence duration_ms=5501 audio_ms=1200 stt_ms=4276)
+[2025-10-21 08:22:40] glasses.audio - INFO - Captured audio bytes=38400 stop_reason=silence duration_ms=4161
+[2025-10-21 08:31:03] glasses.audio - INFO - Wake word 'hey glasses' is not a Porcupine built-in keyword and no custom keyword path provided - using Vosk fallback
+[2025-10-21 08:31:03] glasses.audio - INFO - → Porcupine not available, using Vosk STT-based detection
+[2025-10-21 08:31:03] glasses.audio - INFO - ✅ Using Vosk STT wake word detection (variants=5)
+[2025-10-21 08:31:03] glasses.audio - INFO - Wake word 'hey glasses' is not a Porcupine built-in keyword and no custom keyword path provided - using Vosk fallback
+[2025-10-21 08:31:03] glasses.audio - INFO - Wake word detection info: {'method': 'vosk', 'wake_word': 'hey glasses', 'variants': ['hey glasses', 'hey-glasses', 'hay glasses', 'a glasses', 'hey glass'], 'sensitivity': None, 'porcupine_available': True, 'porcupine_configured': False}
+[2025-10-21 08:32:10] glasses.audio - INFO - Wake word 'hey glasses' is not a Porcupine built-in keyword and no custom keyword path provided - using Vosk fallback
+[2025-10-21 08:32:10] glasses.audio - INFO - → Porcupine not available, using Vosk STT-based detection
+[2025-10-21 08:32:10] glasses.audio - INFO - ✅ Using Vosk STT wake word detection (variants=5)
+[2025-10-21 08:32:10] glasses.audio - INFO - Wake word 'hey glasses' is not a Porcupine built-in keyword and no custom keyword path provided - using Vosk fallback
+[2025-10-21 08:32:10] glasses.audio - INFO - Wake word detection info: {'method': 'vosk', 'wake_word': 'hey glasses', 'variants': ['hey glasses', 'hey-glasses', 'hay glasses', 'a glasses', 'hey glass'], 'sensitivity': None, 'porcupine_available': True, 'porcupine_configured': False}
+[2025-10-21 08:32:25] glasses.audio - INFO - Segment recording started (vad=1 silence_ms=1800 chunk_ms=20 pre_roll_ms=600)
+[2025-10-21 08:32:26] glasses.audio - INFO - VAD detected speech during pre-roll; capturing segment
+[2025-10-21 08:32:43] glasses.audio - INFO - Added 500ms tail padding (25 frames)
+[2025-10-21 08:32:43] glasses.audio - INFO - Segment stopped (reason=done duration_ms=18771 audio_ms=7840 stt_ms=17096)
+[2025-10-21 08:32:44] glasses.audio - INFO - Captured audio bytes=250880 stop_reason=done duration_ms=17095
+[2025-10-21 08:32:46] glasses.audio - INFO - Wake word 'hey glasses' is not a Porcupine built-in keyword and no custom keyword path provided - using Vosk fallback
+[2025-10-21 08:32:46] glasses.audio - INFO - → Porcupine not available, using Vosk STT-based detection
+[2025-10-21 08:32:46] glasses.audio - INFO - ✅ Using Vosk STT wake word detection (variants=5)
+[2025-10-21 08:32:46] glasses.audio - INFO - Wake word 'hey glasses' is not a Porcupine built-in keyword and no custom keyword path provided - using Vosk fallback
+[2025-10-21 08:32:46] glasses.audio - INFO - Wake word detection info: {'method': 'vosk', 'wake_word': 'hey glasses', 'variants': ['hey glasses', 'hey-glasses', 'hay glasses', 'a glasses', 'hey glass'], 'sensitivity': None, 'porcupine_available': True, 'porcupine_configured': False}
+[2025-10-21 10:00:33] glasses.audio - INFO - ✅ Using Vosk STT wake word detection (variants=5)
+[2025-10-21 10:00:33] glasses.audio - INFO - Wake word 'hey glasses' is not a Porcupine built-in keyword and no custom keyword path provided - using Vosk fallback
+[2025-10-21 10:00:33] glasses.audio - INFO - Wake word detection info: {'method': 'vosk', 'wake_word': 'hey glasses', 'variants': ['hey glasses', 'hey-glasses', 'hay glasses', 'a glasses', 'hey glass'], 'sensitivity': None, 'porcupine_available': True, 'porcupine_configured': False}
+[2025-10-21 10:00:38] glasses.audio - INFO - Wake word detected
+[2025-10-21 10:00:41] glasses.audio - INFO - Segment recording started (vad=1 silence_ms=1800 chunk_ms=20 pre_roll_ms=600)
+[2025-10-21 10:00:41] glasses.audio - INFO - VAD detected speech during pre-roll; capturing segment
+[2025-10-21 10:00:55] glasses.audio - INFO - Added 500ms tail padding (25 frames)
+[2025-10-21 10:00:56] glasses.audio - INFO - Segment stopped (reason=silence duration_ms=14697 audio_ms=8260 stt_ms=14657)
+[2025-10-21 10:00:56] glasses.audio - INFO - Captured audio bytes=264320 stop_reason=silence duration_ms=14657
+[2025-10-21 10:00:58] glasses.audio - INFO - ✅ Using Vosk STT wake word detection (variants=5)
+[2025-10-21 10:00:58] glasses.audio - INFO - Wake word 'hey glasses' is not a Porcupine built-in keyword and no custom keyword path provided - using Vosk fallback
+[2025-10-21 10:00:58] glasses.audio - INFO - Wake word detection info: {'method': 'vosk', 'wake_word': 'hey glasses', 'variants': ['hey glasses', 'hey-glasses', 'hay glasses', 'a glasses', 'hey glass'], 'sensitivity': None, 'porcupine_available': True, 'porcupine_configured': False}
+[2025-10-21 10:06:44] glasses.audio - INFO - Wake word detected
+[2025-10-21 10:06:46] glasses.audio - INFO - Segment recording started (vad=1 silence_ms=1800 chunk_ms=20 pre_roll_ms=600)
+[2025-10-21 10:06:46] glasses.audio - INFO - VAD detected speech during pre-roll; capturing segment
+[2025-10-21 10:07:38] glasses.audio - INFO - Segment stopped (reason=cap duration_ms=52580 audio_ms=20580 stt_ms=52533)
+[2025-10-21 10:07:39] glasses.audio - INFO - Captured audio bytes=658560 stop_reason=cap duration_ms=52535
+[2025-10-21 10:07:40] glasses.audio - INFO - ✅ Using Vosk STT wake word detection (variants=5)
+[2025-10-21 10:07:40] glasses.audio - INFO - Wake word 'hey glasses' is not a Porcupine built-in keyword and no custom keyword path provided - using Vosk fallback
+[2025-10-21 10:07:40] glasses.audio - INFO - Wake word detection info: {'method': 'vosk', 'wake_word': 'hey glasses', 'variants': ['hey glasses', 'hey-glasses', 'hay glasses', 'a glasses', 'hey glass'], 'sensitivity': None, 'porcupine_available': True, 'porcupine_configured': False}
+[2025-10-21 11:48:25] glasses.audio - INFO - TTS started len=35
+[2025-10-21 11:48:27] glasses.audio - INFO - TTS completed in 2839 ms
+[2025-10-21 11:48:27] glasses.audio - INFO - pyttsx3 TTS completed in 2837ms
+[2025-10-21 11:48:36] glasses.audio - INFO - TTS started len=35
+[2025-10-21 11:48:39] glasses.audio - INFO - TTS completed in 2512 ms
+[2025-10-21 11:48:39] glasses.audio - INFO - pyttsx3 TTS completed in 2512ms
+[2025-10-21 11:48:56] glasses.audio - INFO - TTS started len=27
+[2025-10-21 11:48:57] glasses.audio - INFO - TTS completed in 73 ms
+[2025-10-21 11:48:57] glasses.audio - INFO - pyttsx3 TTS completed in 69ms
+[2025-10-21 11:48:57] glasses.audio - INFO - TTS started len=27
+[2025-10-21 11:48:57] glasses.audio - INFO - TTS completed in 105 ms
+[2025-10-21 11:48:57] glasses.audio - INFO - pyttsx3 TTS completed in 104ms
+[2025-10-21 11:48:57] glasses.audio - INFO - TTS started len=27
+[2025-10-21 11:48:57] glasses.audio - INFO - TTS completed in 1 ms
+[2025-10-21 11:48:57] glasses.audio - INFO - pyttsx3 TTS completed in 1ms
+[2025-10-21 11:48:57] glasses.audio - INFO - TTS started len=5
+[2025-10-21 11:48:57] glasses.audio - INFO - TTS completed in 2 ms
+[2025-10-21 11:48:57] glasses.audio - INFO - pyttsx3 TTS completed in 1ms
+[2025-10-21 11:48:57] glasses.audio - INFO - TTS started len=5
+[2025-10-21 11:48:57] glasses.audio - INFO - TTS completed in 2 ms
+[2025-10-21 11:48:57] glasses.audio - INFO - pyttsx3 TTS completed in 1ms
+[2025-10-21 11:48:57] glasses.audio - INFO - TTS started len=5
+[2025-10-21 11:48:57] glasses.audio - INFO - TTS completed in 2 ms
+[2025-10-21 11:48:57] glasses.audio - INFO - pyttsx3 TTS completed in 2ms
+[2025-10-21 11:49:15] glasses.audio - INFO - Wake word detected
+[2025-10-21 11:49:15] glasses.audio - INFO - Segment recording started (vad=1 silence_ms=1800 chunk_ms=20 pre_roll_ms=800)
+[2025-10-21 11:49:15] glasses.audio - INFO - Segment stopped (reason=test duration_ms=1 audio_ms=1000 stt_ms=900)
+[2025-10-21 11:49:15] glasses.audio - INFO - TTS started len=4
+[2025-10-21 11:49:15] glasses.audio - INFO - TTS completed in 1 ms
+[2025-10-21 11:50:25] glasses.audio - INFO - Segment recording started (vad=1 silence_ms=1800 chunk_ms=20 pre_roll_ms=800)
+[2025-10-21 11:50:34] glasses.audio - INFO - VAD detected speech during pre-roll; capturing segment
+[2025-10-21 11:59:11] glasses.audio - INFO - ✅ Using Vosk STT wake word detection (variants=5)
+[2025-10-21 11:59:11] glasses.audio - INFO - Wake word 'hey glasses' is not a Porcupine built-in keyword and no custom keyword path provided - using Vosk fallback
+[2025-10-21 11:59:11] glasses.audio - INFO - Wake word detection info: {'method': 'vosk', 'wake_word': 'hey glasses', 'variants': ['hey glasses', 'hey-glasses', 'hay glasses', 'a glasses', 'hey glass'], 'sensitivity': None, 'porcupine_available': True, 'porcupine_configured': False}
+[2025-10-21 11:59:21] glasses.audio - INFO - Wake word detected
+[2025-10-21 11:59:22] glasses.audio - INFO - Segment recording started (vad=1 silence_ms=1800 chunk_ms=20 pre_roll_ms=800)
+[2025-10-21 11:59:23] glasses.audio - INFO - VAD detected speech during pre-roll; capturing segment
+[2025-10-21 11:59:29] glasses.audio - INFO - Added 700ms tail padding (35 frames)
+[2025-10-21 11:59:29] glasses.audio - INFO - Segment stopped (reason=silence duration_ms=6726 audio_ms=3880 stt_ms=6710)
+[2025-10-21 11:59:29] glasses.audio - INFO - Captured audio bytes=124160 stop_reason=silence duration_ms=6401
+[2025-10-21 11:59:30] glasses.audio - INFO - TTS started len=23
+[2025-10-21 11:59:30] glasses.audio - INFO - TTS completed in 33 ms
+[2025-10-21 11:59:30] glasses.audio - INFO - pyttsx3 TTS completed in 31ms
+[2025-10-21 11:59:32] glasses.audio - INFO - Segment recording started (vad=1 silence_ms=1800 chunk_ms=20 pre_roll_ms=800)
+[2025-10-21 11:59:32] glasses.audio - INFO - VAD detected speech during pre-roll; capturing segment
+[2025-10-21 11:59:41] glasses.audio - INFO - Added 700ms tail padding (35 frames)
+[2025-10-21 11:59:41] glasses.audio - INFO - Segment stopped (reason=silence duration_ms=9088 audio_ms=5140 stt_ms=8479)
+[2025-10-21 11:59:41] glasses.audio - INFO - Captured audio bytes=164480 stop_reason=silence duration_ms=8455
+[2025-10-21 11:59:41] glasses.audio - INFO - TTS started len=23
+[2025-10-21 11:59:41] glasses.audio - INFO - TTS completed in 2 ms
+[2025-10-21 11:59:41] glasses.audio - INFO - pyttsx3 TTS completed in 1ms
+[2025-10-21 11:59:42] glasses.audio - INFO - Segment recording started (vad=1 silence_ms=1800 chunk_ms=20 pre_roll_ms=800)
+[2025-10-21 11:59:43] glasses.audio - INFO - VAD detected speech during pre-roll; capturing segment
+[2025-10-21 12:00:28] glasses.audio - INFO - Segment stopped (reason=cap duration_ms=45812 audio_ms=24240 stt_ms=45231)
+[2025-10-21 12:00:28] glasses.audio - INFO - Captured audio bytes=775680 stop_reason=cap duration_ms=45166
+[2025-10-21 12:00:29] glasses.audio - INFO - TTS started len=23
+[2025-10-21 12:00:29] glasses.audio - INFO - TTS completed in 12 ms
+[2025-10-21 12:00:29] glasses.audio - INFO - pyttsx3 TTS completed in 11ms
+[2025-10-21 12:00:29] glasses.audio - INFO - ✅ Using Vosk STT wake word detection (variants=5)
+[2025-10-21 12:00:29] glasses.audio - INFO - Wake word 'hey glasses' is not a Porcupine built-in keyword and no custom keyword path provided - using Vosk fallback
+[2025-10-21 12:00:29] glasses.audio - INFO - Wake word detection info: {'method': 'vosk', 'wake_word': 'hey glasses', 'variants': ['hey glasses', 'hey-glasses', 'hay glasses', 'a glasses', 'hey glass'], 'sensitivity': None, 'porcupine_available': True, 'porcupine_configured': False}
+[2025-10-21 12:06:44] glasses.audio - INFO - ✅ Using Vosk STT wake word detection (variants=5)
+[2025-10-21 12:06:44] glasses.audio - INFO - Wake word 'hey glasses' is not a Porcupine built-in keyword and no custom keyword path provided - using Vosk fallback
+[2025-10-21 12:06:44] glasses.audio - INFO - Wake word detection info: {'method': 'vosk', 'wake_word': 'hey glasses', 'variants': ['hey glasses', 'hey-glasses', 'hay glasses', 'a glasses', 'hey glass'], 'sensitivity': None, 'porcupine_available': True, 'porcupine_configured': False}
+[2025-10-21 12:07:02] glasses.audio - INFO - Segment recording started (vad=2 silence_ms=800 chunk_ms=256 pre_roll_ms=500)
+[2025-10-21 12:07:02] glasses.audio - INFO - ✅ Using Vosk STT wake word detection (variants=5)
+[2025-10-21 12:07:02] glasses.audio - INFO - Wake word 'hey glasses' is not a Porcupine built-in keyword and no custom keyword path provided - using Vosk fallback
+[2025-10-21 12:07:02] glasses.audio - INFO - Wake word detection info: {'method': 'vosk', 'wake_word': 'hey glasses', 'variants': ['hey glasses', 'hey-glasses', 'hay glasses', 'a glasses', 'hey glass'], 'sensitivity': None, 'porcupine_available': True, 'porcupine_configured': False}
+[2025-10-21 12:07:05] glasses.audio - INFO - ✅ Using Vosk STT wake word detection (variants=5)
+[2025-10-21 12:07:05] glasses.audio - INFO - Wake word 'hey glasses' is not a Porcupine built-in keyword and no custom keyword path provided - using Vosk fallback
+[2025-10-21 12:07:05] glasses.audio - INFO - Wake word detection info: {'method': 'vosk', 'wake_word': 'hey glasses', 'variants': ['hey glasses', 'hey-glasses', 'hay glasses', 'a glasses', 'hey glass'], 'sensitivity': None, 'porcupine_available': True, 'porcupine_configured': False}
+[2025-10-21 12:07:08] glasses.audio - INFO - Segment recording started (vad=2 silence_ms=800 chunk_ms=256 pre_roll_ms=500)
+[2025-10-21 12:07:08] glasses.audio - INFO - ✅ Using Vosk STT wake word detection (variants=5)
+[2025-10-21 12:07:08] glasses.audio - INFO - Wake word 'hey glasses' is not a Porcupine built-in keyword and no custom keyword path provided - using Vosk fallback
+[2025-10-21 12:07:08] glasses.audio - INFO - Wake word detection info: {'method': 'vosk', 'wake_word': 'hey glasses', 'variants': ['hey glasses', 'hey-glasses', 'hay glasses', 'a glasses', 'hey glass'], 'sensitivity': None, 'porcupine_available': True, 'porcupine_configured': False}
+[2025-10-21 12:07:10] glasses.audio - INFO - ✅ Using Vosk STT wake word detection (variants=5)
+[2025-10-21 12:07:10] glasses.audio - INFO - Wake word 'hey glasses' is not a Porcupine built-in keyword and no custom keyword path provided - using Vosk fallback
+[2025-10-21 12:07:10] glasses.audio - INFO - Wake word detection info: {'method': 'vosk', 'wake_word': 'hey glasses', 'variants': ['hey glasses', 'hey-glasses', 'hay glasses', 'a glasses', 'hey glass'], 'sensitivity': None, 'porcupine_available': True, 'porcupine_configured': False}
+[2025-10-21 12:53:01] glasses.audio - INFO - ✅ Using Vosk STT wake word detection (variants=7)
+[2025-10-21 12:53:01] glasses.audio - INFO - Wake word 'hey glasses' is not a Porcupine built-in keyword and no custom keyword path provided - using Vosk fallback
+[2025-10-21 12:53:01] glasses.audio - INFO - Wake word detection info: {'method': 'vosk', 'wake_word': 'hey glasses', 'variants': ['hey glasses', 'hey-glasses', 'hay glasses', 'a glasses', 'hey glass', 'hi glasses', 'ok glasses'], 'sensitivity': None, 'porcupine_available': True, 'porcupine_configured': False}
+[2025-10-21 12:53:10] glasses.audio - INFO - Segment recording started (vad=1 silence_ms=1800 chunk_ms=20 pre_roll_ms=1000)
+[2025-10-21 12:53:10] glasses.audio - INFO - Capture config: VAD=1, silence=1800ms, pre_roll=1000ms, min_speech_frames=8, chunk_ms=20ms, sample_rate=16000Hz
+[2025-10-21 12:53:10] glasses.audio - INFO - Resetting and starting STT transcriber...
+[2025-10-21 12:53:12] glasses.audio - INFO - [CAPTURE] VAD detected speech during pre-roll (4 speech frames); grace_period=1000ms; capturing segment
+[2025-10-21 12:53:30] glasses.audio - INFO - [VAD→SILENCE] Silence for 1810ms (threshold=1800ms); ending capture
+[2025-10-21 12:53:31] glasses.audio - INFO - Added 600ms tail padding (30 frames)
+[2025-10-21 12:53:31] glasses.audio - INFO - Segment stopped (reason=silence duration_ms=21758 audio_ms=11900 stt_ms=19948)
+[2025-10-21 12:53:32] glasses.audio - INFO - Captured audio bytes=380800 stop_reason=silence duration_ms=19861
+[2025-10-21 12:53:33] glasses.audio - INFO - Session Turn 0: Starting TTS (text length: 154 chars)
+[2025-10-21 12:53:33] glasses.audio - INFO - TTS started len=154
+[2025-10-21 12:53:33] glasses.audio - INFO - TTS Turn 0: Starting pyttsx3 speech (length: 154 chars)
+[2025-10-21 12:53:33] glasses.audio - INFO - TTS Turn 0: Calling engine.say() and runAndWait()
+[2025-10-21 12:53:33] glasses.audio - INFO - TTS Turn 0: engine.runAndWait() completed in 24ms
+[2025-10-21 12:53:33] glasses.audio - INFO - TTS completed in 28 ms
+[2025-10-21 12:53:33] glasses.audio - INFO - TTS Turn 0: pyttsx3 TTS completed in 27ms total
+[2025-10-21 12:53:33] glasses.audio - INFO - Session Turn 0: TTS completed in 184ms
+[2025-10-21 12:53:33] glasses.audio - INFO - Session Turn 0: Completed. Awaiting follow-up speech...
+[2025-10-21 12:53:34] glasses.audio - INFO - Session Turn 0: Follow-up speech detected! Starting turn 1...
+[2025-10-21 12:53:35] glasses.audio - INFO - Segment recording started (vad=1 silence_ms=1800 chunk_ms=20 pre_roll_ms=1000)
+[2025-10-21 12:53:35] glasses.audio - INFO - Capture config: VAD=1, silence=1800ms, pre_roll=1000ms, min_speech_frames=8, chunk_ms=20ms, sample_rate=16000Hz
+[2025-10-21 12:53:35] glasses.audio - INFO - Resetting and starting STT transcriber...
+[2025-10-21 12:53:37] glasses.audio - INFO - [CAPTURE] VAD detected speech during pre-roll (50 speech frames); grace_period=1000ms; capturing segment
+[2025-10-21 12:54:07] glasses.audio - INFO - [VAD→SILENCE] Silence for 1802ms (threshold=1800ms); ending capture
+[2025-10-21 12:54:08] glasses.audio - INFO - Added 600ms tail padding (30 frames)
+[2025-10-21 12:54:08] glasses.audio - INFO - Segment stopped (reason=silence duration_ms=32867 audio_ms=17480 stt_ms=31808)
+[2025-10-21 12:54:08] glasses.audio - INFO - Captured audio bytes=559360 stop_reason=silence duration_ms=31762
+[2025-10-21 12:54:10] glasses.audio - INFO - Session Turn 1: Starting TTS (text length: 219 chars)
+[2025-10-21 12:54:10] glasses.audio - INFO - TTS started len=219
+[2025-10-21 12:54:10] glasses.audio - INFO - TTS Turn 1: Starting pyttsx3 speech (length: 219 chars)
+[2025-10-21 12:54:10] glasses.audio - INFO - TTS Turn 1: Calling engine.say() and runAndWait()
+[2025-10-21 12:54:10] glasses.audio - INFO - TTS Turn 1: engine.runAndWait() completed in 3ms
+[2025-10-21 12:54:10] glasses.audio - INFO - TTS completed in 5 ms
+[2025-10-21 12:54:10] glasses.audio - INFO - TTS Turn 1: pyttsx3 TTS completed in 4ms total
+[2025-10-21 12:54:10] glasses.audio - INFO - Session Turn 1: TTS completed in 159ms
+[2025-10-21 12:54:10] glasses.audio - INFO - Session Turn 1: Completed. Awaiting follow-up speech...
+[2025-10-21 12:54:11] glasses.audio - INFO - Session Turn 1: Follow-up speech detected! Starting turn 2...
+[2025-10-21 12:54:11] glasses.audio - INFO - Segment recording started (vad=1 silence_ms=1800 chunk_ms=20 pre_roll_ms=1000)
+[2025-10-21 12:54:11] glasses.audio - INFO - Capture config: VAD=1, silence=1800ms, pre_roll=1000ms, min_speech_frames=8, chunk_ms=20ms, sample_rate=16000Hz
+[2025-10-21 12:54:11] glasses.audio - INFO - Resetting and starting STT transcriber...
+[2025-10-21 12:54:12] glasses.audio - INFO - [CAPTURE] VAD detected speech during pre-roll (6 speech frames); grace_period=1000ms; capturing segment
+[2025-10-21 12:54:57] glasses.audio - INFO - Segment stopped (reason=cap duration_ms=46199 audio_ms=24320 stt_ms=45173)
+[2025-10-21 12:54:58] glasses.audio - INFO - Captured audio bytes=778240 stop_reason=cap duration_ms=45126
+[2025-10-21 12:54:59] glasses.audio - INFO - Session Turn 2: Starting TTS (text length: 131 chars)
+[2025-10-21 12:54:59] glasses.audio - INFO - TTS started len=131
+[2025-10-21 12:54:59] glasses.audio - INFO - TTS Turn 2: Starting pyttsx3 speech (length: 131 chars)
+[2025-10-21 12:54:59] glasses.audio - INFO - TTS Turn 2: Calling engine.say() and runAndWait()
+[2025-10-21 12:54:59] glasses.audio - INFO - TTS Turn 2: engine.runAndWait() completed in 2ms
+[2025-10-21 12:54:59] glasses.audio - INFO - TTS completed in 3 ms
+[2025-10-21 12:54:59] glasses.audio - INFO - TTS Turn 2: pyttsx3 TTS completed in 2ms total
+[2025-10-21 12:54:59] glasses.audio - INFO - Session Turn 2: TTS completed in 158ms
+[2025-10-21 12:54:59] glasses.audio - INFO - ✅ Using Vosk STT wake word detection (variants=7)
+[2025-10-21 12:54:59] glasses.audio - INFO - Wake word 'hey glasses' is not a Porcupine built-in keyword and no custom keyword path provided - using Vosk fallback
+[2025-10-21 12:54:59] glasses.audio - INFO - Wake word detection info: {'method': 'vosk', 'wake_word': 'hey glasses', 'variants': ['hey glasses', 'hey-glasses', 'hay glasses', 'a glasses', 'hey glass', 'hi glasses', 'ok glasses'], 'sensitivity': None, 'porcupine_available': True, 'porcupine_configured': False}
+[2025-10-21 12:55:42] glasses.audio - INFO - ✓ Wake word detected! Transcript: 'the the hague losses the the hey glad' Pre-roll buffer: 50 frames
+[2025-10-21 12:55:42] glasses.audio - INFO - Wake word detected
+[2025-10-21 12:55:44] glasses.audio - INFO - Segment recording started (vad=1 silence_ms=1800 chunk_ms=20 pre_roll_ms=1000)
+[2025-10-21 12:55:44] glasses.audio - INFO - Capture config: VAD=1, silence=1800ms, pre_roll=1000ms, min_speech_frames=8, chunk_ms=20ms, sample_rate=16000Hz
+[2025-10-21 12:55:44] glasses.audio - INFO - Resetting and starting STT transcriber...
+[2025-10-21 12:55:44] glasses.audio - INFO - [CAPTURE] VAD detected speech during pre-roll (50 speech frames); grace_period=1000ms; capturing segment
+[2025-10-21 12:55:57] glasses.audio - INFO - [VAD→SILENCE] Silence for 1804ms (threshold=1800ms); ending capture
+[2025-10-21 12:55:58] glasses.audio - INFO - Added 600ms tail padding (30 frames)
+[2025-10-21 12:55:58] glasses.audio - INFO - Segment stopped (reason=silence duration_ms=14348 audio_ms=8760 stt_ms=14314)
+[2025-10-21 12:55:59] glasses.audio - INFO - Captured audio bytes=280320 stop_reason=silence duration_ms=14260
+[2025-10-21 12:56:00] glasses.audio - INFO - Session Turn 0: Starting TTS (text length: 309 chars)
+[2025-10-21 12:56:00] glasses.audio - INFO - TTS started len=309
+[2025-10-21 12:56:00] glasses.audio - INFO - TTS Turn 0: Starting pyttsx3 speech (length: 309 chars)
+[2025-10-21 12:56:00] glasses.audio - INFO - TTS Turn 0: Calling engine.say() and runAndWait()
+[2025-10-21 12:56:00] glasses.audio - INFO - TTS Turn 0: engine.runAndWait() completed in 12ms
+[2025-10-21 12:56:00] glasses.audio - INFO - TTS completed in 14 ms
+[2025-10-21 12:56:00] glasses.audio - INFO - TTS Turn 0: pyttsx3 TTS completed in 13ms total
+[2025-10-21 12:56:00] glasses.audio - INFO - Session Turn 0: TTS completed in 169ms
+[2025-10-21 12:56:00] glasses.audio - INFO - Session Turn 0: Completed. Awaiting follow-up speech...
+[2025-10-21 12:56:01] glasses.audio - INFO - Session Turn 0: Follow-up speech detected! Starting turn 1...
+[2025-10-21 12:56:03] glasses.audio - INFO - Segment recording started (vad=1 silence_ms=1800 chunk_ms=20 pre_roll_ms=1000)
+[2025-10-21 12:56:03] glasses.audio - INFO - Capture config: VAD=1, silence=1800ms, pre_roll=1000ms, min_speech_frames=8, chunk_ms=20ms, sample_rate=16000Hz
+[2025-10-21 12:56:03] glasses.audio - INFO - Resetting and starting STT transcriber...
+[2025-10-21 12:56:04] glasses.audio - INFO - [CAPTURE] VAD detected speech during pre-roll (31 speech frames); grace_period=1000ms; capturing segment
+[2025-10-21 12:56:30] glasses.audio - INFO - Added 600ms tail padding (30 frames)
+[2025-10-21 12:56:30] glasses.audio - INFO - Segment stopped (reason=done duration_ms=27106 audio_ms=14660 stt_ms=26088)
+[2025-10-21 12:56:30] glasses.audio - INFO - Captured audio bytes=469120 stop_reason=done duration_ms=26043
+[2025-10-21 12:56:30] glasses.audio - INFO - ✅ Using Vosk STT wake word detection (variants=7)
+[2025-10-21 12:56:30] glasses.audio - INFO - Wake word 'hey glasses' is not a Porcupine built-in keyword and no custom keyword path provided - using Vosk fallback
+[2025-10-21 12:56:30] glasses.audio - INFO - Wake word detection info: {'method': 'vosk', 'wake_word': 'hey glasses', 'variants': ['hey glasses', 'hey-glasses', 'hay glasses', 'a glasses', 'hey glass', 'hi glasses', 'ok glasses'], 'sensitivity': None, 'porcupine_available': True, 'porcupine_configured': False}
+[2025-10-21 12:57:24] glasses.audio - INFO - ✓ Wake word detected! Transcript: 'the or the the have losses hey gases' Pre-roll buffer: 50 frames
+[2025-10-21 12:57:24] glasses.audio - INFO - Wake word detected
+[2025-10-21 12:57:26] glasses.audio - INFO - Segment recording started (vad=1 silence_ms=1800 chunk_ms=20 pre_roll_ms=1000)
+[2025-10-21 12:57:26] glasses.audio - INFO - Capture config: VAD=1, silence=1800ms, pre_roll=1000ms, min_speech_frames=8, chunk_ms=20ms, sample_rate=16000Hz
+[2025-10-21 12:57:26] glasses.audio - INFO - Resetting and starting STT transcriber...
+[2025-10-21 12:57:26] glasses.audio - INFO - [CAPTURE] VAD detected speech during pre-roll (7 speech frames); grace_period=1000ms; capturing segment
+[2025-10-21 12:57:32] glasses.audio - INFO - Added 600ms tail padding (30 frames)
+[2025-10-21 12:57:32] glasses.audio - INFO - Segment stopped (reason=done duration_ms=6602 audio_ms=4580 stt_ms=6534)
+[2025-10-21 12:57:32] glasses.audio - INFO - Captured audio bytes=146560 stop_reason=done duration_ms=6498
+[2025-10-21 12:57:33] glasses.audio - INFO - Session Turn 0: Starting TTS (text length: 140 chars)
+[2025-10-21 12:57:33] glasses.audio - INFO - TTS started len=140
+[2025-10-21 12:57:33] glasses.audio - INFO - TTS Turn 0: Starting pyttsx3 speech (length: 140 chars)
+[2025-10-21 12:57:33] glasses.audio - INFO - TTS Turn 0: Calling engine.say() and runAndWait()
+[2025-10-21 12:57:33] glasses.audio - INFO - TTS Turn 0: engine.runAndWait() completed in 6ms
+[2025-10-21 12:57:33] glasses.audio - INFO - TTS completed in 8 ms
+[2025-10-21 12:57:33] glasses.audio - INFO - TTS Turn 0: pyttsx3 TTS completed in 7ms total
+[2025-10-21 12:57:34] glasses.audio - INFO - Session Turn 0: TTS completed in 160ms
+[2025-10-21 12:57:34] glasses.audio - INFO - Session Turn 0: Completed. Awaiting follow-up speech...
+[2025-10-21 12:57:34] glasses.audio - INFO - Session Turn 0: Follow-up speech detected! Starting turn 1...
+[2025-10-21 12:57:36] glasses.audio - INFO - Segment recording started (vad=1 silence_ms=1800 chunk_ms=20 pre_roll_ms=1000)
+[2025-10-21 12:57:36] glasses.audio - INFO - Capture config: VAD=1, silence=1800ms, pre_roll=1000ms, min_speech_frames=8, chunk_ms=20ms, sample_rate=16000Hz
+[2025-10-21 12:57:36] glasses.audio - INFO - Resetting and starting STT transcriber...
+[2025-10-21 12:57:37] glasses.audio - INFO - [CAPTURE] VAD detected speech during pre-roll (5 speech frames); grace_period=1000ms; capturing segment
+[2025-10-21 12:57:41] glasses.audio - INFO - ✅ Using Vosk STT wake word detection (variants=7)
+[2025-10-21 12:57:41] glasses.audio - INFO - Wake word 'hey glasses' is not a Porcupine built-in keyword and no custom keyword path provided - using Vosk fallback
+[2025-10-21 12:57:41] glasses.audio - INFO - Wake word detection info: {'method': 'vosk', 'wake_word': 'hey glasses', 'variants': ['hey glasses', 'hey-glasses', 'hay glasses', 'a glasses', 'hey glass', 'hi glasses', 'ok glasses'], 'sensitivity': None, 'porcupine_available': True, 'porcupine_configured': False}
+[2025-10-21 12:57:43] glasses.audio - INFO - [VAD→SILENCE] Silence for 1834ms (threshold=1800ms); ending capture
+[2025-10-21 12:57:45] glasses.audio - INFO - Added 600ms tail padding (30 frames)
+[2025-10-21 12:57:45] glasses.audio - INFO - Segment stopped (reason=silence duration_ms=8888 audio_ms=5320 stt_ms=7837)
+[2025-10-21 12:57:45] glasses.audio - INFO - Captured audio bytes=170240 stop_reason=silence duration_ms=7780
+[2025-10-21 12:57:46] glasses.audio - INFO - Session Turn 1: Starting TTS (text length: 152 chars)
+[2025-10-21 12:57:46] glasses.audio - INFO - TTS started len=152
+[2025-10-21 12:57:46] glasses.audio - INFO - TTS Turn 1: Starting pyttsx3 speech (length: 152 chars)
+[2025-10-21 12:57:46] glasses.audio - INFO - TTS Turn 1: Calling engine.say() and runAndWait()
+[2025-10-21 12:57:46] glasses.audio - INFO - TTS Turn 1: engine.runAndWait() completed in 3ms
+[2025-10-21 12:57:46] glasses.audio - INFO - TTS completed in 5 ms
+[2025-10-21 12:57:46] glasses.audio - INFO - TTS Turn 1: pyttsx3 TTS completed in 4ms total
+[2025-10-21 12:57:46] glasses.audio - INFO - Session Turn 1: TTS completed in 157ms
+[2025-10-21 12:57:46] glasses.audio - INFO - Session Turn 1: Completed. Awaiting follow-up speech...
+[2025-10-21 12:57:47] glasses.audio - INFO - Session Turn 1: Follow-up speech detected! Starting turn 2...
+[2025-10-21 12:57:47] glasses.audio - INFO - Segment recording started (vad=1 silence_ms=1800 chunk_ms=20 pre_roll_ms=1000)
+[2025-10-21 12:57:47] glasses.audio - INFO - Capture config: VAD=1, silence=1800ms, pre_roll=1000ms, min_speech_frames=8, chunk_ms=20ms, sample_rate=16000Hz
+[2025-10-21 12:57:47] glasses.audio - INFO - Resetting and starting STT transcriber...
+[2025-10-21 12:57:48] glasses.audio - INFO - [CAPTURE] VAD detected speech during pre-roll (16 speech frames); grace_period=1000ms; capturing segment
+[2025-10-21 12:57:57] glasses.audio - INFO - Added 600ms tail padding (30 frames)
+[2025-10-21 12:57:57] glasses.audio - INFO - Segment stopped (reason=done duration_ms=10280 audio_ms=6020 stt_ms=9328)
+[2025-10-21 12:57:58] glasses.audio - INFO - Captured audio bytes=192640 stop_reason=done duration_ms=9303
+[2025-10-21 12:57:58] glasses.audio - INFO - Session Turn 2: Starting TTS (text length: 138 chars)
+[2025-10-21 12:57:58] glasses.audio - INFO - TTS started len=138
+[2025-10-21 12:57:58] glasses.audio - INFO - TTS Turn 2: Starting pyttsx3 speech (length: 138 chars)
+[2025-10-21 12:57:58] glasses.audio - INFO - TTS Turn 2: Calling engine.say() and runAndWait()
+[2025-10-21 12:57:58] glasses.audio - INFO - TTS Turn 2: engine.runAndWait() completed in 3ms
+[2025-10-21 12:57:58] glasses.audio - INFO - TTS completed in 6 ms
+[2025-10-21 12:57:58] glasses.audio - INFO - TTS Turn 2: pyttsx3 TTS completed in 4ms total
+[2025-10-21 12:57:58] glasses.audio - INFO - Session Turn 2: TTS completed in 158ms
+[2025-10-21 12:57:58] glasses.audio - INFO - Session Turn 2: Completed. Awaiting follow-up speech...
+[2025-10-21 12:57:59] glasses.audio - INFO - Session Turn 2: Follow-up speech detected! Starting turn 3...
+[2025-10-21 12:57:59] glasses.audio - INFO - Segment recording started (vad=1 silence_ms=1800 chunk_ms=20 pre_roll_ms=1000)
+[2025-10-21 12:57:59] glasses.audio - INFO - Capture config: VAD=1, silence=1800ms, pre_roll=1000ms, min_speech_frames=8, chunk_ms=20ms, sample_rate=16000Hz
+[2025-10-21 12:57:59] glasses.audio - INFO - Resetting and starting STT transcriber...
+[2025-10-21 12:58:00] glasses.audio - INFO - [CAPTURE] VAD detected speech during pre-roll (6 speech frames); grace_period=1000ms; capturing segment
+[2025-10-21 12:58:31] glasses.audio - INFO - [VAD→SILENCE] Silence for 1803ms (threshold=1800ms); ending capture
+[2025-10-21 12:58:32] glasses.audio - INFO - Added 600ms tail padding (30 frames)
+[2025-10-21 12:58:32] glasses.audio - INFO - Segment stopped (reason=silence duration_ms=32312 audio_ms=17780 stt_ms=31395)
+[2025-10-21 12:58:32] glasses.audio - INFO - Captured audio bytes=568960 stop_reason=silence duration_ms=31349
+[2025-10-21 12:58:33] glasses.audio - INFO - Session Turn 3: Starting TTS (text length: 222 chars)
+[2025-10-21 12:58:33] glasses.audio - INFO - TTS started len=222
+[2025-10-21 12:58:33] glasses.audio - INFO - TTS Turn 3: Starting pyttsx3 speech (length: 222 chars)
+[2025-10-21 12:58:33] glasses.audio - INFO - TTS Turn 3: Calling engine.say() and runAndWait()
+[2025-10-21 12:58:33] glasses.audio - INFO - TTS Turn 3: engine.runAndWait() completed in 9ms
+[2025-10-21 12:58:33] glasses.audio - INFO - TTS completed in 11 ms
+[2025-10-21 12:58:33] glasses.audio - INFO - TTS Turn 3: pyttsx3 TTS completed in 10ms total
+[2025-10-21 12:58:33] glasses.audio - INFO - Session Turn 3: TTS completed in 166ms
+[2025-10-21 12:58:33] glasses.audio - INFO - Session Turn 3: Completed. Awaiting follow-up speech...
+[2025-10-21 12:58:34] glasses.audio - INFO - Session Turn 3: Follow-up speech detected! Starting turn 4...
+[2025-10-21 12:58:34] glasses.audio - INFO - Segment recording started (vad=1 silence_ms=1800 chunk_ms=20 pre_roll_ms=1000)
+[2025-10-21 12:58:34] glasses.audio - INFO - Capture config: VAD=1, silence=1800ms, pre_roll=1000ms, min_speech_frames=8, chunk_ms=20ms, sample_rate=16000Hz
+[2025-10-21 12:58:34] glasses.audio - INFO - Resetting and starting STT transcriber...
+[2025-10-21 12:58:35] glasses.audio - INFO - [CAPTURE] VAD detected speech during pre-roll (6 speech frames); grace_period=1000ms; capturing segment
+[2025-10-21 12:58:42] glasses.audio - INFO - [VAD→SILENCE] Silence for 1836ms (threshold=1800ms); ending capture
+[2025-10-21 12:58:43] glasses.audio - INFO - Added 600ms tail padding (30 frames)
+[2025-10-21 12:58:43] glasses.audio - INFO - Segment stopped (reason=silence duration_ms=9157 audio_ms=5540 stt_ms=8230)
+[2025-10-21 12:58:43] glasses.audio - INFO - Captured audio bytes=177280 stop_reason=silence duration_ms=8187
+[2025-10-21 12:58:45] glasses.audio - INFO - Session Turn 4: Starting TTS (text length: 382 chars)
+[2025-10-21 12:58:45] glasses.audio - INFO - TTS started len=382
+[2025-10-21 12:58:45] glasses.audio - INFO - TTS Turn 4: Starting pyttsx3 speech (length: 382 chars)
+[2025-10-21 12:58:45] glasses.audio - INFO - TTS Turn 4: Calling engine.say() and runAndWait()
+[2025-10-21 12:58:45] glasses.audio - INFO - TTS Turn 4: engine.runAndWait() completed in 2ms
+[2025-10-21 12:58:45] glasses.audio - INFO - TTS completed in 3 ms
+[2025-10-21 12:58:45] glasses.audio - INFO - TTS Turn 4: pyttsx3 TTS completed in 3ms total
+[2025-10-21 12:58:45] glasses.audio - INFO - Session Turn 4: TTS completed in 158ms
+[2025-10-21 12:58:45] glasses.audio - INFO - Session Turn 4: Completed. Awaiting follow-up speech...
+[2025-10-21 12:58:45] glasses.audio - INFO - Session Turn 4: Follow-up speech detected! Starting turn 5...
+[2025-10-21 12:58:47] glasses.audio - INFO - Segment recording started (vad=1 silence_ms=1800 chunk_ms=20 pre_roll_ms=1000)
+[2025-10-21 12:58:47] glasses.audio - INFO - Capture config: VAD=1, silence=1800ms, pre_roll=1000ms, min_speech_frames=8, chunk_ms=20ms, sample_rate=16000Hz
+[2025-10-21 12:58:47] glasses.audio - INFO - Resetting and starting STT transcriber...
+[2025-10-21 12:58:48] glasses.audio - INFO - [CAPTURE] VAD detected speech during pre-roll (50 speech frames); grace_period=1000ms; capturing segment
+[2025-10-21 12:59:25] glasses.audio - INFO - [VAD→SILENCE] Silence for 1804ms (threshold=1800ms); ending capture
+[2025-10-21 12:59:26] glasses.audio - INFO - Added 600ms tail padding (30 frames)
+[2025-10-21 12:59:26] glasses.audio - INFO - Segment stopped (reason=silence duration_ms=39608 audio_ms=19920 stt_ms=38777)
+[2025-10-21 12:59:27] glasses.audio - INFO - Captured audio bytes=637440 stop_reason=silence duration_ms=38615
+[2025-10-21 12:59:28] glasses.audio - INFO - Session Turn 5: Starting TTS (text length: 517 chars)
+[2025-10-21 12:59:28] glasses.audio - INFO - TTS started len=517
+[2025-10-21 12:59:28] glasses.audio - INFO - TTS Turn 5: Starting pyttsx3 speech (length: 517 chars)
+[2025-10-21 12:59:28] glasses.audio - INFO - TTS Turn 5: Calling engine.say() and runAndWait()
+[2025-10-21 12:59:28] glasses.audio - INFO - TTS Turn 5: engine.runAndWait() completed in 5ms
+[2025-10-21 12:59:28] glasses.audio - INFO - TTS completed in 10 ms
+[2025-10-21 12:59:28] glasses.audio - INFO - TTS Turn 5: pyttsx3 TTS completed in 6ms total
+[2025-10-21 12:59:28] glasses.audio - INFO - Session Turn 5: TTS completed in 167ms
+[2025-10-21 12:59:28] glasses.audio - INFO - Session Turn 5: Completed. Awaiting follow-up speech...
+[2025-10-21 12:59:29] glasses.audio - INFO - Session Turn 5: Follow-up speech detected! Starting turn 6...
+[2025-10-21 12:59:30] glasses.audio - INFO - Segment recording started (vad=1 silence_ms=1800 chunk_ms=20 pre_roll_ms=1000)
+[2025-10-21 12:59:30] glasses.audio - INFO - Capture config: VAD=1, silence=1800ms, pre_roll=1000ms, min_speech_frames=8, chunk_ms=20ms, sample_rate=16000Hz
+[2025-10-21 12:59:30] glasses.audio - INFO - Resetting and starting STT transcriber...
+[2025-10-21 12:59:31] glasses.audio - INFO - [CAPTURE] VAD detected speech during pre-roll (10 speech frames); grace_period=1000ms; capturing segment
+[2025-10-21 12:59:33] glasses.audio - INFO - [VAD→SILENCE] Silence for 1806ms (threshold=1800ms); ending capture
+[2025-10-21 12:59:34] glasses.audio - INFO - Added 600ms tail padding (30 frames)
+[2025-10-21 12:59:34] glasses.audio - INFO - Segment stopped (reason=silence duration_ms=3981 audio_ms=2640 stt_ms=3060)
+[2025-10-21 12:59:34] glasses.audio - INFO - Captured audio bytes=84480 stop_reason=silence duration_ms=3027
+[2025-10-21 12:59:35] glasses.audio - INFO - Session Turn 6: Starting TTS (text length: 89 chars)
+[2025-10-21 12:59:35] glasses.audio - INFO - TTS started len=89
+[2025-10-21 12:59:35] glasses.audio - INFO - TTS Turn 6: Starting pyttsx3 speech (length: 89 chars)
+[2025-10-21 12:59:35] glasses.audio - INFO - TTS Turn 6: Calling engine.say() and runAndWait()
+[2025-10-21 12:59:35] glasses.audio - INFO - TTS Turn 6: engine.runAndWait() completed in 3ms
+[2025-10-21 12:59:35] glasses.audio - INFO - TTS completed in 6 ms
+[2025-10-21 12:59:35] glasses.audio - INFO - TTS Turn 6: pyttsx3 TTS completed in 4ms total
+[2025-10-21 12:59:35] glasses.audio - INFO - Session Turn 6: TTS completed in 162ms
+[2025-10-21 12:59:35] glasses.audio - INFO - Session Turn 6: Completed. Awaiting follow-up speech...
+[2025-10-21 12:59:36] glasses.audio - INFO - Session Turn 6: Follow-up speech detected! Starting turn 7...
+[2025-10-21 12:59:36] glasses.audio - INFO - Segment recording started (vad=1 silence_ms=1800 chunk_ms=20 pre_roll_ms=1000)
+[2025-10-21 12:59:36] glasses.audio - INFO - Capture config: VAD=1, silence=1800ms, pre_roll=1000ms, min_speech_frames=8, chunk_ms=20ms, sample_rate=16000Hz
+[2025-10-21 12:59:36] glasses.audio - INFO - Resetting and starting STT transcriber...
+[2025-10-21 12:59:37] glasses.audio - INFO - [CAPTURE] VAD detected speech during pre-roll (6 speech frames); grace_period=1000ms; capturing segment
+[2025-10-21 12:59:58] glasses.audio - INFO - [VAD→SILENCE] Silence for 1803ms (threshold=1800ms); ending capture
+[2025-10-21 13:00:00] glasses.audio - INFO - Added 600ms tail padding (30 frames)
+[2025-10-21 13:00:00] glasses.audio - INFO - Segment stopped (reason=silence duration_ms=23594 audio_ms=13160 stt_ms=22635)
+[2025-10-21 13:00:00] glasses.audio - INFO - Captured audio bytes=421120 stop_reason=silence duration_ms=22601
+[2025-10-21 13:00:01] glasses.audio - INFO - Session Turn 7: Starting TTS (text length: 172 chars)
+[2025-10-21 13:00:01] glasses.audio - INFO - TTS started len=172
+[2025-10-21 13:00:01] glasses.audio - INFO - TTS Turn 7: Starting pyttsx3 speech (length: 172 chars)
+[2025-10-21 13:00:01] glasses.audio - INFO - TTS Turn 7: Calling engine.say() and runAndWait()
+[2025-10-21 13:00:01] glasses.audio - INFO - TTS Turn 7: engine.runAndWait() completed in 3ms
+[2025-10-21 13:00:01] glasses.audio - INFO - TTS completed in 4 ms
+[2025-10-21 13:00:01] glasses.audio - INFO - TTS Turn 7: pyttsx3 TTS completed in 3ms total
+[2025-10-21 13:00:01] glasses.audio - INFO - Session Turn 7: TTS completed in 155ms
+[2025-10-21 13:00:01] glasses.audio - INFO - Session Turn 7: Completed. Awaiting follow-up speech...
+[2025-10-21 13:00:02] glasses.audio - INFO - Session Turn 7: Follow-up speech detected! Starting turn 8...
+[2025-10-21 13:00:02] glasses.audio - INFO - Segment recording started (vad=1 silence_ms=1800 chunk_ms=20 pre_roll_ms=1000)
+[2025-10-21 13:00:02] glasses.audio - INFO - Capture config: VAD=1, silence=1800ms, pre_roll=1000ms, min_speech_frames=8, chunk_ms=20ms, sample_rate=16000Hz
+[2025-10-21 13:00:02] glasses.audio - INFO - Resetting and starting STT transcriber...
+[2025-10-21 13:00:03] glasses.audio - INFO - [CAPTURE] VAD detected speech during pre-roll (15 speech frames); grace_period=1000ms; capturing segment
+[2025-10-21 14:13:11] glasses.audio - INFO - ✅ Using Vosk STT wake word detection (variants=8)
+[2025-10-21 14:13:11] glasses.audio - INFO - Wake word 'hey glasses' is not a Porcupine built-in keyword and no custom keyword path provided - using Vosk fallback
+[2025-10-21 14:13:11] glasses.audio - INFO - Wake word detection info: {'method': 'vosk', 'wake_word': 'hey glasses', 'variants': ['hey glasses', 'hey-glasses', 'hay glasses', 'a glasses', 'hey glass', 'hey glaases', 'hi glasses', 'ok glasses'], 'sensitivity': None, 'wake_vad_level': 1, 'match_window_ms': 1200, 'porcupine_available': True, 'porcupine_configured': False}
+[2025-10-21 14:13:13] glasses.audio - INFO - [AGC] Auto-selected VAD level 3 (background RMS: 541.5)
+[2025-10-21 14:13:17] glasses.audio - INFO - ✓ Wake word detected! Transcript: 'hey gases' Pre-roll buffer: 30 frames
+[2025-10-21 14:13:17] glasses.audio - INFO - Wake word detected
+[2025-10-21 14:13:19] glasses.audio - INFO - Segment recording started (vad=1 silence_ms=1200 chunk_ms=20 pre_roll_ms=600)
+[2025-10-21 14:13:19] glasses.audio - INFO - Capture config: VAD=1, silence=1200ms, pre_roll=600ms, min_speech_frames=4, chunk_ms=20ms, sample_rate=16000Hz, AGC=enabled
+[2025-10-21 14:13:19] glasses.audio - INFO - Resetting and starting STT transcriber...
+[2025-10-21 14:13:19] glasses.audio - INFO - [CAPTURE] VAD detected speech during pre-roll (22 speech frames); grace_period=1000ms; capturing segment
+[2025-10-21 14:13:20] glasses.audio - INFO - [VAD→SILENCE] Silence for 1207ms (threshold=1200ms); ending capture
+[2025-10-21 14:13:21] glasses.audio - INFO - Added 400ms tail padding (20 frames)
+[2025-10-21 14:13:21] glasses.audio - INFO - [AGC] Capture complete: Final gain 1.00x (+0.0dB), RMS 5075/3000, Processed 55 frames
+[2025-10-21 14:13:21] glasses.audio - INFO - Segment stopped (reason=silence duration_ms=2226 audio_ms=1700 stt_ms=2126)
+[2025-10-21 14:13:21] glasses.audio - INFO - Captured audio bytes=54400 stop_reason=silence duration_ms=2125
+[2025-10-21 14:13:23] glasses.audio - INFO - Session Turn 0: Starting TTS (text length: 213 chars)
+[2025-10-21 14:13:23] glasses.audio - INFO - TTS started len=213
+[2025-10-21 14:13:23] glasses.audio - INFO - TTS Turn 0: Starting pyttsx3 speech (length: 213 chars)
+[2025-10-21 14:13:23] glasses.audio - INFO - TTS Turn 0: Calling engine.say() and runAndWait()
+[2025-10-21 14:13:24] glasses.audio - INFO - TTS Turn 0: engine.runAndWait() completed in 107ms
+[2025-10-21 14:13:24] glasses.audio - INFO - TTS completed in 113 ms
+[2025-10-21 14:13:24] glasses.audio - INFO - TTS Turn 0: pyttsx3 TTS completed in 112ms total
+[2025-10-21 14:13:24] glasses.audio - INFO - Session Turn 0: TTS completed in 266ms
+[2025-10-21 14:13:24] glasses.audio - INFO - Session Turn 0: Completed. Awaiting follow-up speech...
+[2025-10-21 14:13:24] glasses.audio - INFO - Session Turn 0: Follow-up speech detected! Starting turn 1...
+[2025-10-21 14:13:26] glasses.audio - INFO - Segment recording started (vad=1 silence_ms=1200 chunk_ms=20 pre_roll_ms=600)
+[2025-10-21 14:13:26] glasses.audio - INFO - Capture config: VAD=1, silence=1200ms, pre_roll=600ms, min_speech_frames=4, chunk_ms=20ms, sample_rate=16000Hz, AGC=enabled
+[2025-10-21 14:13:26] glasses.audio - INFO - Resetting and starting STT transcriber...
+[2025-10-21 14:13:26] glasses.audio - INFO - [CAPTURE] VAD detected speech during pre-roll (16 speech frames); grace_period=1000ms; capturing segment
+[2025-10-21 14:13:28] glasses.audio - INFO - [VAD→SILENCE] Silence for 1234ms (threshold=1200ms); ending capture
+[2025-10-21 14:13:28] glasses.audio - INFO - Added 400ms tail padding (20 frames)
+[2025-10-21 14:13:29] glasses.audio - INFO - [AGC] Capture complete: Final gain 1.00x (+0.0dB), RMS 4614/3000, Processed 64 frames
+[2025-10-21 14:13:29] glasses.audio - INFO - Segment stopped (reason=silence duration_ms=2706 audio_ms=1660 stt_ms=2252)
+[2025-10-21 14:13:29] glasses.audio - INFO - Captured audio bytes=53120 stop_reason=silence duration_ms=2251
+[2025-10-21 14:13:29] glasses.audio - INFO - Session Turn 1: Starting TTS (text length: 132 chars)
+[2025-10-21 14:13:29] glasses.audio - INFO - TTS started len=132
+[2025-10-21 14:13:29] glasses.audio - INFO - TTS Turn 1: Starting pyttsx3 speech (length: 132 chars)
+[2025-10-21 14:13:29] glasses.audio - INFO - TTS Turn 1: Calling engine.say() and runAndWait()
+[2025-10-21 14:13:29] glasses.audio - INFO - TTS Turn 1: engine.runAndWait() completed in 2ms
+[2025-10-21 14:13:29] glasses.audio - INFO - TTS completed in 19 ms
+[2025-10-21 14:13:29] glasses.audio - INFO - TTS Turn 1: pyttsx3 TTS completed in 18ms total
+[2025-10-21 14:13:30] glasses.audio - INFO - Session Turn 1: TTS completed in 174ms
+[2025-10-21 14:13:30] glasses.audio - INFO - Session Turn 1: Completed. Awaiting follow-up speech...
+[2025-10-21 14:13:30] glasses.audio - INFO - Session Turn 1: Follow-up speech detected! Starting turn 2...
+[2025-10-21 14:13:32] glasses.audio - INFO - Segment recording started (vad=1 silence_ms=1200 chunk_ms=20 pre_roll_ms=600)
+[2025-10-21 14:13:32] glasses.audio - INFO - Capture config: VAD=1, silence=1200ms, pre_roll=600ms, min_speech_frames=4, chunk_ms=20ms, sample_rate=16000Hz, AGC=enabled
+[2025-10-21 14:13:32] glasses.audio - INFO - Resetting and starting STT transcriber...
+[2025-10-21 14:13:32] glasses.audio - INFO - [CAPTURE] VAD detected speech during pre-roll (13 speech frames); grace_period=1000ms; capturing segment
+[2025-10-21 14:13:33] glasses.audio - INFO - [VAD→SILENCE] Silence for 1233ms (threshold=1200ms); ending capture
+[2025-10-21 14:13:34] glasses.audio - INFO - Added 400ms tail padding (20 frames)
+[2025-10-21 14:13:34] glasses.audio - INFO - [AGC] Capture complete: Final gain 10.00x (+20.0dB), RMS 34/3000, Processed 61 frames
+[2025-10-21 14:13:34] glasses.audio - INFO - Segment stopped (reason=silence duration_ms=2425 audio_ms=1700 stt_ms=2037)
+[2025-10-21 14:13:34] glasses.audio - INFO - Captured audio bytes=54400 stop_reason=silence duration_ms=2036
+[2025-10-21 14:13:34] glasses.audio - INFO - Session Turn 2: Starting TTS (text length: 23 chars)
+[2025-10-21 14:13:34] glasses.audio - INFO - TTS started len=23
+[2025-10-21 14:13:34] glasses.audio - INFO - TTS Turn 2: Starting pyttsx3 speech (length: 23 chars)
+[2025-10-21 14:13:34] glasses.audio - INFO - TTS Turn 2: Calling engine.say() and runAndWait()
+[2025-10-21 14:13:34] glasses.audio - INFO - TTS Turn 2: engine.runAndWait() completed in 1ms
+[2025-10-21 14:13:34] glasses.audio - INFO - TTS completed in 2 ms
+[2025-10-21 14:13:34] glasses.audio - INFO - TTS Turn 2: pyttsx3 TTS completed in 1ms total
+[2025-10-21 14:13:35] glasses.audio - INFO - Session Turn 2: TTS completed in 156ms
+[2025-10-21 14:13:35] glasses.audio - INFO - Session Turn 2: Completed. Awaiting follow-up speech...
+[2025-10-21 14:13:35] glasses.audio - INFO - Session Turn 2: Follow-up speech detected! Starting turn 3...
+[2025-10-21 14:13:36] glasses.audio - INFO - Segment recording started (vad=1 silence_ms=1200 chunk_ms=20 pre_roll_ms=600)
+[2025-10-21 14:13:36] glasses.audio - INFO - Capture config: VAD=1, silence=1200ms, pre_roll=600ms, min_speech_frames=4, chunk_ms=20ms, sample_rate=16000Hz, AGC=enabled
+[2025-10-21 14:13:36] glasses.audio - INFO - Resetting and starting STT transcriber...
+[2025-10-21 14:13:36] glasses.audio - INFO - [CAPTURE] VAD detected speech during pre-roll (11 speech frames); grace_period=1000ms; capturing segment
+[2025-10-21 14:13:37] glasses.audio - INFO - [VAD→SILENCE] Silence for 1205ms (threshold=1200ms); ending capture
+[2025-10-21 14:13:38] glasses.audio - INFO - Added 400ms tail padding (20 frames)
+[2025-10-21 14:13:38] glasses.audio - INFO - [AGC] Capture complete: Final gain 10.00x (+20.0dB), RMS 38/3000, Processed 61 frames
+[2025-10-21 14:13:38] glasses.audio - INFO - Segment stopped (reason=silence duration_ms=2239 audio_ms=1700 stt_ms=1985)
+[2025-10-21 14:13:38] glasses.audio - INFO - Captured audio bytes=54400 stop_reason=silence duration_ms=1985
+[2025-10-21 14:13:38] glasses.audio - INFO - Session Turn 3: Starting TTS (text length: 23 chars)
+[2025-10-21 14:13:38] glasses.audio - INFO - TTS started len=23
+[2025-10-21 14:13:38] glasses.audio - INFO - TTS Turn 3: Starting pyttsx3 speech (length: 23 chars)
+[2025-10-21 14:13:38] glasses.audio - INFO - TTS Turn 3: Calling engine.say() and runAndWait()
+[2025-10-21 14:13:38] glasses.audio - INFO - TTS Turn 3: engine.runAndWait() completed in 1ms
+[2025-10-21 14:13:38] glasses.audio - INFO - TTS completed in 2 ms
+[2025-10-21 14:13:38] glasses.audio - INFO - TTS Turn 3: pyttsx3 TTS completed in 1ms total
+[2025-10-21 14:13:38] glasses.audio - INFO - Session Turn 3: TTS completed in 155ms
+[2025-10-21 14:13:38] glasses.audio - INFO - Session Turn 3: Completed. Awaiting follow-up speech...
+[2025-10-21 14:13:39] glasses.audio - INFO - Session Turn 3: Follow-up speech detected! Starting turn 4...
+[2025-10-21 14:13:39] glasses.audio - INFO - Segment recording started (vad=1 silence_ms=1200 chunk_ms=20 pre_roll_ms=600)
+[2025-10-21 14:13:39] glasses.audio - INFO - Capture config: VAD=1, silence=1200ms, pre_roll=600ms, min_speech_frames=4, chunk_ms=20ms, sample_rate=16000Hz, AGC=enabled
+[2025-10-21 14:13:39] glasses.audio - INFO - Resetting and starting STT transcriber...
+[2025-10-21 14:13:40] glasses.audio - INFO - [CAPTURE] VAD detected speech during pre-roll (12 speech frames); grace_period=1000ms; capturing segment
+[2025-10-21 14:13:41] glasses.audio - INFO - [VAD→SILENCE] Silence for 1205ms (threshold=1200ms); ending capture
+[2025-10-21 14:13:42] glasses.audio - INFO - Added 400ms tail padding (20 frames)
+[2025-10-21 14:13:42] glasses.audio - INFO - [AGC] Capture complete: Final gain 1.00x (+0.0dB), RMS 3648/3000, Processed 61 frames
+[2025-10-21 14:13:42] glasses.audio - INFO - Segment stopped (reason=silence duration_ms=2371 audio_ms=1700 stt_ms=2119)
+[2025-10-21 14:13:42] glasses.audio - INFO - Captured audio bytes=54400 stop_reason=silence duration_ms=2118
+[2025-10-21 14:13:43] glasses.audio - INFO - Session Turn 4: Starting TTS (text length: 119 chars)
+[2025-10-21 14:13:43] glasses.audio - INFO - TTS started len=119
+[2025-10-21 14:13:43] glasses.audio - INFO - TTS Turn 4: Starting pyttsx3 speech (length: 119 chars)
+[2025-10-21 14:13:43] glasses.audio - INFO - TTS Turn 4: Calling engine.say() and runAndWait()
+[2025-10-21 14:13:43] glasses.audio - INFO - TTS Turn 4: engine.runAndWait() completed in 1ms
+[2025-10-21 14:13:43] glasses.audio - INFO - TTS completed in 3 ms
+[2025-10-21 14:13:43] glasses.audio - INFO - TTS Turn 4: pyttsx3 TTS completed in 2ms total
+[2025-10-21 14:13:43] glasses.audio - INFO - Session Turn 4: TTS completed in 157ms
+[2025-10-21 14:13:43] glasses.audio - INFO - Session Turn 4: Completed. Awaiting follow-up speech...
+[2025-10-21 14:13:43] glasses.audio - INFO - Session Turn 4: Follow-up speech detected! Starting turn 5...
+[2025-10-21 14:13:45] glasses.audio - INFO - Segment recording started (vad=1 silence_ms=1200 chunk_ms=20 pre_roll_ms=600)
+[2025-10-21 14:13:45] glasses.audio - INFO - Capture config: VAD=1, silence=1200ms, pre_roll=600ms, min_speech_frames=4, chunk_ms=20ms, sample_rate=16000Hz, AGC=enabled
+[2025-10-21 14:13:45] glasses.audio - INFO - Resetting and starting STT transcriber...
+[2025-10-21 14:13:46] glasses.audio - INFO - [CAPTURE] VAD detected speech during pre-roll (30 speech frames); grace_period=1000ms; capturing segment
+[2025-10-21 14:13:47] glasses.audio - INFO - [VAD→SILENCE] Silence for 1233ms (threshold=1200ms); ending capture
+[2025-10-21 14:13:48] glasses.audio - INFO - Added 400ms tail padding (20 frames)
+[2025-10-21 14:13:48] glasses.audio - INFO - [AGC] Capture complete: Final gain 10.00x (+20.0dB), RMS 110/3000, Processed 62 frames
+[2025-10-21 14:13:48] glasses.audio - INFO - Segment stopped (reason=silence duration_ms=2528 audio_ms=1680 stt_ms=2173)
+[2025-10-21 14:13:48] glasses.audio - INFO - Captured audio bytes=53760 stop_reason=silence duration_ms=2172
+[2025-10-21 14:13:48] glasses.audio - INFO - Session Turn 5: Starting TTS (text length: 147 chars)
+[2025-10-21 14:13:48] glasses.audio - INFO - TTS started len=147
+[2025-10-21 14:13:48] glasses.audio - INFO - TTS Turn 5: Starting pyttsx3 speech (length: 147 chars)
+[2025-10-21 14:13:48] glasses.audio - INFO - TTS Turn 5: Calling engine.say() and runAndWait()
+[2025-10-21 14:13:48] glasses.audio - INFO - TTS Turn 5: engine.runAndWait() completed in 3ms
+[2025-10-21 14:13:48] glasses.audio - INFO - TTS completed in 5 ms
+[2025-10-21 14:13:48] glasses.audio - INFO - TTS Turn 5: pyttsx3 TTS completed in 4ms total
+[2025-10-21 14:13:49] glasses.audio - INFO - Session Turn 5: TTS completed in 161ms
+[2025-10-21 14:13:49] glasses.audio - INFO - Session Turn 5: Completed. Awaiting follow-up speech...
+[2025-10-21 14:13:49] glasses.audio - INFO - Session Turn 5: Follow-up speech detected! Starting turn 6...
+[2025-10-21 14:13:51] glasses.audio - INFO - Segment recording started (vad=1 silence_ms=1200 chunk_ms=20 pre_roll_ms=600)
+[2025-10-21 14:13:51] glasses.audio - INFO - Capture config: VAD=1, silence=1200ms, pre_roll=600ms, min_speech_frames=4, chunk_ms=20ms, sample_rate=16000Hz, AGC=enabled
+[2025-10-21 14:13:51] glasses.audio - INFO - Resetting and starting STT transcriber...
+[2025-10-21 14:13:51] glasses.audio - INFO - [CAPTURE] VAD detected speech during pre-roll (30 speech frames); grace_period=1000ms; capturing segment
+[2025-10-21 14:13:52] glasses.audio - INFO - [VAD→SILENCE] Silence for 1232ms (threshold=1200ms); ending capture
+[2025-10-21 14:13:53] glasses.audio - INFO - Added 400ms tail padding (20 frames)
+[2025-10-21 14:13:53] glasses.audio - INFO - [AGC] Capture complete: Final gain 10.00x (+20.0dB), RMS 70/3000, Processed 62 frames
+[2025-10-21 14:13:53] glasses.audio - INFO - Segment stopped (reason=silence duration_ms=2349 audio_ms=1700 stt_ms=2056)
+[2025-10-21 14:13:53] glasses.audio - INFO - Captured audio bytes=54400 stop_reason=silence duration_ms=2055
+[2025-10-21 14:13:53] glasses.audio - INFO - Session Turn 6: Starting TTS (text length: 23 chars)
+[2025-10-21 14:13:53] glasses.audio - INFO - TTS started len=23
+[2025-10-21 14:13:53] glasses.audio - INFO - TTS Turn 6: Starting pyttsx3 speech (length: 23 chars)
+[2025-10-21 14:13:53] glasses.audio - INFO - TTS Turn 6: Calling engine.say() and runAndWait()
+[2025-10-21 14:13:53] glasses.audio - INFO - TTS Turn 6: engine.runAndWait() completed in 1ms
+[2025-10-21 14:13:53] glasses.audio - INFO - TTS completed in 2 ms
+[2025-10-21 14:13:53] glasses.audio - INFO - TTS Turn 6: pyttsx3 TTS completed in 1ms total
+[2025-10-21 14:13:54] glasses.audio - INFO - Session Turn 6: TTS completed in 157ms
+[2025-10-21 14:13:54] glasses.audio - INFO - Session Turn 6: Completed. Awaiting follow-up speech...
+[2025-10-21 14:13:54] glasses.audio - INFO - Session Turn 6: Follow-up speech detected! Starting turn 7...
+[2025-10-21 14:13:55] glasses.audio - INFO - Segment recording started (vad=1 silence_ms=1200 chunk_ms=20 pre_roll_ms=600)
+[2025-10-21 14:13:55] glasses.audio - INFO - Capture config: VAD=1, silence=1200ms, pre_roll=600ms, min_speech_frames=4, chunk_ms=20ms, sample_rate=16000Hz, AGC=enabled
+[2025-10-21 14:13:55] glasses.audio - INFO - Resetting and starting STT transcriber...
+[2025-10-21 14:13:55] glasses.audio - INFO - [CAPTURE] VAD detected speech during pre-roll (10 speech frames); grace_period=1000ms; capturing segment
+[2025-10-21 14:13:56] glasses.audio - INFO - [VAD→SILENCE] Silence for 1200ms (threshold=1200ms); ending capture
+[2025-10-21 14:13:57] glasses.audio - INFO - Added 400ms tail padding (20 frames)
+[2025-10-21 14:13:57] glasses.audio - INFO - [AGC] Capture complete: Final gain 10.00x (+20.0dB), RMS 73/3000, Processed 61 frames
+[2025-10-21 14:13:57] glasses.audio - INFO - Segment stopped (reason=silence duration_ms=2250 audio_ms=1700 stt_ms=1996)
+[2025-10-21 14:13:57] glasses.audio - INFO - Captured audio bytes=54400 stop_reason=silence duration_ms=1995
+[2025-10-21 14:13:57] glasses.audio - INFO - Session Turn 7: Starting TTS (text length: 23 chars)
+[2025-10-21 14:13:57] glasses.audio - INFO - TTS started len=23
+[2025-10-21 14:13:57] glasses.audio - INFO - TTS Turn 7: Starting pyttsx3 speech (length: 23 chars)
+[2025-10-21 14:13:57] glasses.audio - INFO - TTS Turn 7: Calling engine.say() and runAndWait()
+[2025-10-21 14:13:57] glasses.audio - INFO - TTS Turn 7: engine.runAndWait() completed in 1ms
+[2025-10-21 14:13:57] glasses.audio - INFO - TTS completed in 3 ms
+[2025-10-21 14:13:57] glasses.audio - INFO - TTS Turn 7: pyttsx3 TTS completed in 1ms total
+[2025-10-21 14:13:57] glasses.audio - INFO - Session Turn 7: TTS completed in 158ms
+[2025-10-21 14:13:57] glasses.audio - INFO - Session Turn 7: Completed. Awaiting follow-up speech...
+[2025-10-21 14:13:58] glasses.audio - INFO - Session Turn 7: Follow-up speech detected! Starting turn 8...
+[2025-10-21 14:13:58] glasses.audio - INFO - Segment recording started (vad=1 silence_ms=1200 chunk_ms=20 pre_roll_ms=600)
+[2025-10-21 14:13:58] glasses.audio - INFO - Capture config: VAD=1, silence=1200ms, pre_roll=600ms, min_speech_frames=4, chunk_ms=20ms, sample_rate=16000Hz, AGC=enabled
+[2025-10-21 14:13:58] glasses.audio - INFO - Resetting and starting STT transcriber...
+[2025-10-21 14:13:59] glasses.audio - INFO - [CAPTURE] VAD detected speech during pre-roll (22 speech frames); grace_period=1000ms; capturing segment
+[2025-10-21 14:14:00] glasses.audio - INFO - [VAD→SILENCE] Silence for 1205ms (threshold=1200ms); ending capture
+[2025-10-21 14:14:01] glasses.audio - INFO - Added 400ms tail padding (20 frames)
+[2025-10-21 14:14:01] glasses.audio - INFO - [AGC] Capture complete: Final gain 1.00x (+0.0dB), RMS 5270/3000, Processed 61 frames
+[2025-10-21 14:14:01] glasses.audio - INFO - Segment stopped (reason=silence duration_ms=2261 audio_ms=1700 stt_ms=2011)
+[2025-10-21 14:14:01] glasses.audio - INFO - Captured audio bytes=54400 stop_reason=silence duration_ms=2010
+[2025-10-21 14:14:01] glasses.audio - INFO - ✅ Using Vosk STT wake word detection (variants=8)
+[2025-10-21 14:14:01] glasses.audio - INFO - Wake word 'hey glasses' is not a Porcupine built-in keyword and no custom keyword path provided - using Vosk fallback
+[2025-10-21 14:14:01] glasses.audio - INFO - Wake word detection info: {'method': 'vosk', 'wake_word': 'hey glasses', 'variants': ['hey glasses', 'hey-glasses', 'hay glasses', 'a glasses', 'hey glass', 'hey glaases', 'hi glasses', 'ok glasses'], 'sensitivity': None, 'wake_vad_level': 1, 'match_window_ms': 1200, 'porcupine_available': True, 'porcupine_configured': False}
+[2025-10-21 14:14:02] glasses.audio - INFO - [AGC] Auto-selected VAD level 3 (background RMS: 788.7)
+[2025-10-21 14:18:25] glasses.audio - INFO - ✅ Using Vosk STT wake word detection (variants=8)
+[2025-10-21 14:18:25] glasses.audio - INFO - Wake word 'hey glasses' is not a Porcupine built-in keyword and no custom keyword path provided - using Vosk fallback
+[2025-10-21 14:18:25] glasses.audio - INFO - Wake word detection info: {'method': 'vosk', 'wake_word': 'hey glasses', 'variants': ['hey glasses', 'hey-glasses', 'hay glasses', 'a glasses', 'hey glass', 'hey glaases', 'hi glasses', 'ok glasses'], 'sensitivity': None, 'wake_vad_level': 1, 'match_window_ms': 1200, 'porcupine_available': True, 'porcupine_configured': False}
+[2025-10-21 14:18:27] glasses.audio - INFO - [AGC] Auto-selected VAD level 3 (background RMS: 2213.5)
+[2025-10-21 14:18:48] glasses.audio - INFO - Segment recording started (vad=1 silence_ms=1800 chunk_ms=20 pre_roll_ms=800)
+[2025-10-21 14:18:48] glasses.audio - INFO - Capture config: VAD=1, silence=1800ms, pre_roll=800ms, min_speech_frames=3, chunk_ms=20ms, sample_rate=16000Hz, AGC=enabled
+[2025-10-21 14:18:48] glasses.audio - INFO - Resetting and starting STT transcriber...
+[2025-10-21 14:18:50] glasses.audio - INFO - [CAPTURE] VAD detected speech during pre-roll (40 speech frames); grace_period=1000ms; capturing segment
+[2025-10-21 14:18:51] glasses.audio - INFO - [VAD→SILENCE] Silence for 1822ms (threshold=1800ms); ending capture
+[2025-10-21 14:18:53] glasses.audio - INFO - Added 600ms tail padding (30 frames)
+[2025-10-21 14:18:53] glasses.audio - INFO - [AGC] Capture complete: Final gain 20.00x (+26.0dB), RMS 62/6000, Processed 114 frames
+[2025-10-21 14:18:53] glasses.audio - INFO - Segment stopped (reason=silence duration_ms=5260 audio_ms=2280 stt_ms=3769)
+[2025-10-21 14:18:54] glasses.audio - INFO - Captured audio bytes=72960 stop_reason=silence duration_ms=3728
+[2025-10-21 14:18:54] glasses.audio - INFO - ✅ Using Vosk STT wake word detection (variants=8)
+[2025-10-21 14:18:54] glasses.audio - INFO - Wake word 'hey glasses' is not a Porcupine built-in keyword and no custom keyword path provided - using Vosk fallback
+[2025-10-21 14:18:54] glasses.audio - INFO - Wake word detection info: {'method': 'vosk', 'wake_word': 'hey glasses', 'variants': ['hey glasses', 'hey-glasses', 'hay glasses', 'a glasses', 'hey glass', 'hey glaases', 'hi glasses', 'ok glasses'], 'sensitivity': None, 'wake_vad_level': 1, 'match_window_ms': 1200, 'porcupine_available': True, 'porcupine_configured': False}
+[2025-10-21 14:18:55] glasses.audio - INFO - [AGC] Auto-selected VAD level 2 (background RMS: 337.4)
+[2025-10-21 14:31:49] glasses.audio - INFO - TTS started len=35
+[2025-10-21 14:31:49] glasses.audio - INFO - TTS Turn 0: Starting pyttsx3 speech (length: 35 chars)
+[2025-10-21 14:31:49] glasses.audio - INFO - TTS Turn 0: Calling engine.say() and runAndWait()
+[2025-10-21 14:31:52] glasses.audio - INFO - TTS Turn 0: engine.runAndWait() completed in 2724ms
+[2025-10-21 14:31:52] glasses.audio - INFO - TTS completed in 2728 ms
+[2025-10-21 14:31:52] glasses.audio - INFO - TTS Turn 0: pyttsx3 TTS completed in 2726ms total
+[2025-10-21 14:32:06] glasses.audio - INFO - TTS started len=35
+[2025-10-21 14:32:06] glasses.audio - INFO - TTS Turn 0: Starting pyttsx3 speech (length: 35 chars)
+[2025-10-21 14:32:06] glasses.audio - INFO - TTS Turn 0: Calling engine.say() and runAndWait()
+[2025-10-21 14:32:08] glasses.audio - INFO - TTS Turn 0: engine.runAndWait() completed in 2681ms
+[2025-10-21 14:32:08] glasses.audio - INFO - TTS completed in 2686 ms
+[2025-10-21 14:32:08] glasses.audio - INFO - TTS Turn 0: pyttsx3 TTS completed in 2685ms total
+[2025-10-21 14:32:22] glasses.audio - INFO - [AGC] Auto-selected VAD level 1 (background RMS: 9793.8)
+[2025-10-21 14:32:29] glasses.audio - INFO - TTS started len=27
+[2025-10-21 14:32:29] glasses.audio - INFO - TTS Turn 0: Starting pyttsx3 speech (length: 27 chars)
+[2025-10-21 14:32:29] glasses.audio - INFO - TTS Turn 0: Calling engine.say() and runAndWait()
+[2025-10-21 14:32:29] glasses.audio - INFO - TTS Turn 0: engine.runAndWait() completed in 4ms
+[2025-10-21 14:32:29] glasses.audio - INFO - TTS completed in 6 ms
+[2025-10-21 14:32:29] glasses.audio - INFO - TTS Turn 0: pyttsx3 TTS completed in 5ms total
+[2025-10-21 14:32:29] glasses.audio - INFO - TTS started len=27
+[2025-10-21 14:32:29] glasses.audio - INFO - TTS Turn 0: Starting pyttsx3 speech (length: 27 chars)
+[2025-10-21 14:32:29] glasses.audio - INFO - TTS Turn 0: Calling engine.say() and runAndWait()
+[2025-10-21 14:32:29] glasses.audio - INFO - TTS Turn 0: engine.runAndWait() completed in 10ms
+[2025-10-21 14:32:29] glasses.audio - INFO - TTS completed in 12 ms
+[2025-10-21 14:32:29] glasses.audio - INFO - TTS Turn 0: pyttsx3 TTS completed in 11ms total
+[2025-10-21 14:32:29] glasses.audio - INFO - TTS started len=27
+[2025-10-21 14:32:29] glasses.audio - INFO - TTS Turn 0: Starting pyttsx3 speech (length: 27 chars)
+[2025-10-21 14:32:29] glasses.audio - INFO - TTS Turn 0: Calling engine.say() and runAndWait()
+[2025-10-21 14:32:29] glasses.audio - INFO - TTS Turn 0: engine.runAndWait() completed in 1ms
+[2025-10-21 14:32:29] glasses.audio - INFO - TTS completed in 2 ms
+[2025-10-21 14:32:29] glasses.audio - INFO - TTS Turn 0: pyttsx3 TTS completed in 1ms total
+[2025-10-21 14:32:29] glasses.audio - INFO - TTS started len=5
+[2025-10-21 14:32:29] glasses.audio - INFO - TTS Turn 0: Starting pyttsx3 speech (length: 5 chars)
+[2025-10-21 14:32:29] glasses.audio - INFO - TTS Turn 0: Calling engine.say() and runAndWait()
+[2025-10-21 14:32:29] glasses.audio - INFO - TTS Turn 0: engine.runAndWait() completed in 1ms
+[2025-10-21 14:32:29] glasses.audio - INFO - TTS completed in 2 ms
+[2025-10-21 14:32:29] glasses.audio - INFO - TTS Turn 0: pyttsx3 TTS completed in 1ms total
+[2025-10-21 14:32:29] glasses.audio - INFO - TTS started len=5
+[2025-10-21 14:32:29] glasses.audio - INFO - TTS Turn 0: Starting pyttsx3 speech (length: 5 chars)
+[2025-10-21 14:32:29] glasses.audio - INFO - TTS Turn 0: Calling engine.say() and runAndWait()
+[2025-10-21 14:32:29] glasses.audio - INFO - TTS Turn 0: engine.runAndWait() completed in 1ms
+[2025-10-21 14:32:29] glasses.audio - INFO - TTS completed in 2 ms
+[2025-10-21 14:32:29] glasses.audio - INFO - TTS Turn 0: pyttsx3 TTS completed in 1ms total
+[2025-10-21 14:32:30] glasses.audio - INFO - TTS started len=5
+[2025-10-21 14:32:30] glasses.audio - INFO - TTS Turn 0: Starting pyttsx3 speech (length: 5 chars)
+[2025-10-21 14:32:30] glasses.audio - INFO - TTS Turn 0: Calling engine.say() and runAndWait()
+[2025-10-21 14:32:30] glasses.audio - INFO - TTS Turn 0: engine.runAndWait() completed in 1ms
+[2025-10-21 14:32:30] glasses.audio - INFO - TTS completed in 3 ms
+[2025-10-21 14:32:30] glasses.audio - INFO - TTS Turn 0: pyttsx3 TTS completed in 1ms total
+[2025-10-21 14:32:51] glasses.audio - INFO - Wake word detected
+[2025-10-21 14:32:51] glasses.audio - INFO - Segment recording started (vad=1 silence_ms=1800 chunk_ms=20 pre_roll_ms=1000)
+[2025-10-21 14:32:51] glasses.audio - INFO - Segment stopped (reason=test duration_ms=125 audio_ms=1000 stt_ms=900)
+[2025-10-21 14:32:51] glasses.audio - INFO - TTS started len=4
+[2025-10-21 14:32:51] glasses.audio - INFO - TTS completed in 7 ms

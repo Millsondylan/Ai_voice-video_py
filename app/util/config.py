@@ -11,7 +11,7 @@ from dotenv import load_dotenv
 # Default configuration values aligned with the build brief.
 DEFAULT_CONFIG: Dict[str, Any] = {
     "wake_word": "hey glasses",
-    "silence_ms": 1500,
+    "silence_ms": 1200,
     "max_segment_s": 45,
     "frame_sample_fps": 2,
     "frame_max_images": 6,
@@ -22,10 +22,12 @@ DEFAULT_CONFIG: Dict[str, Any] = {
     "mic_device_name": None,
     "sample_rate_hz": 16000,
     "chunk_samples": 320,
-    "vad_aggressiveness": 2,
-    "pre_roll_ms": 400,
-    "wake_variants": ["hey glasses", "hey-glasses", "hay glasses"],
+    "vad_aggressiveness": 1,
+    "pre_roll_ms": 600,
+    "wake_variants": ["hey glasses", "hey-glasses", "hay glasses", "hey glaases"],
     "wake_sensitivity": 0.65,
+    "wake_vad_level": 1,
+    "wake_match_window_ms": 1200,
     "tts_voice": None,
     "tts_rate": 175,
     # Porcupine wake word detection (optional, falls back to Vosk)
@@ -35,6 +37,14 @@ DEFAULT_CONFIG: Dict[str, Any] = {
     # Advanced speech capture settings for complete word capture
     "min_speech_frames": 5,        # Minimum speech frames before allowing silence cutoff
     "tail_padding_ms": 400,        # Extra audio to capture after speech ends
+    "noise_gate_threshold": 0,     # Amplitude threshold for STT noise gating (0 disables)
+    "apply_noise_gate": False,     # Enable preprocessing noise gate before STT (off by default)
+    "apply_speech_filter": False,  # Apply bandpass filter before STT
+    "speech_filter_highpass_hz": 80,
+    "speech_filter_lowpass_hz": 8000,
+    "vosk_max_alternatives": 5,
+    "resample_on_mismatch": True,
+    "enable_agc": True,  # Enable Automatic Gain Control for quiet microphones
 }
 
 
@@ -63,6 +73,15 @@ class AppConfig:
     chunk_samples: int = DEFAULT_CONFIG["chunk_samples"]
     vad_aggressiveness: int = DEFAULT_CONFIG["vad_aggressiveness"]
     pre_roll_ms: int = DEFAULT_CONFIG["pre_roll_ms"]
+    wake_vad_level: int = DEFAULT_CONFIG["wake_vad_level"]
+    wake_match_window_ms: int = DEFAULT_CONFIG["wake_match_window_ms"]
+    noise_gate_threshold: int = DEFAULT_CONFIG["noise_gate_threshold"]
+    apply_noise_gate: bool = DEFAULT_CONFIG["apply_noise_gate"]
+    apply_speech_filter: bool = DEFAULT_CONFIG["apply_speech_filter"]
+    speech_filter_highpass_hz: int = DEFAULT_CONFIG["speech_filter_highpass_hz"]
+    speech_filter_lowpass_hz: int = DEFAULT_CONFIG["speech_filter_lowpass_hz"]
+    vosk_max_alternatives: int = DEFAULT_CONFIG["vosk_max_alternatives"]
+    resample_on_mismatch: bool = DEFAULT_CONFIG["resample_on_mismatch"]
     wake_variants: List[str] = field(default_factory=lambda: DEFAULT_CONFIG["wake_variants"].copy())
     wake_sensitivity: float = DEFAULT_CONFIG["wake_sensitivity"]
     tts_voice: Optional[str] = DEFAULT_CONFIG["tts_voice"]
@@ -75,6 +94,8 @@ class AppConfig:
     # Advanced speech capture settings for complete word capture
     min_speech_frames: int = DEFAULT_CONFIG["min_speech_frames"]
     tail_padding_ms: int = DEFAULT_CONFIG["tail_padding_ms"]
+    # AGC (Automatic Gain Control) for quiet microphones
+    enable_agc: bool = DEFAULT_CONFIG["enable_agc"]
 
     def to_dict(self) -> Dict[str, Any]:
         """Return a JSON serializable dict representation."""
@@ -138,8 +159,17 @@ def load_config(config_path: Optional[Path] = None) -> AppConfig:
         ("GLASSES_CHUNK_SAMPLES", "chunk_samples"),
         ("GLASSES_VAD_AGGRESSIVENESS", "vad_aggressiveness"),
         ("GLASSES_PRE_ROLL_MS", "pre_roll_ms"),
+        ("GLASSES_NOISE_GATE_THRESHOLD", "noise_gate_threshold"),
+        ("GLASSES_APPLY_NOISE_GATE", "apply_noise_gate"),
+        ("GLASSES_APPLY_SPEECH_FILTER", "apply_speech_filter"),
+        ("GLASSES_SPEECH_FILTER_HIGHPASS", "speech_filter_highpass_hz"),
+        ("GLASSES_SPEECH_FILTER_LOWPASS", "speech_filter_lowpass_hz"),
+        ("GLASSES_VOSK_MAX_ALTERNATIVES", "vosk_max_alternatives"),
+        ("GLASSES_RESAMPLE_ON_MISMATCH", "resample_on_mismatch"),
         ("GLASSES_WAKE_VARIANTS", "wake_variants"),
         ("GLASSES_WAKE_SENSITIVITY", "wake_sensitivity"),
+        ("GLASSES_WAKE_VAD_LEVEL", "wake_vad_level"),
+        ("GLASSES_WAKE_MATCH_MS", "wake_match_window_ms"),
         ("GLASSES_TTS_VOICE", "tts_voice"),
         ("GLASSES_TTS_RATE", "tts_rate"),
         ("GLASSES_PREFER_PORCUPINE", "prefer_porcupine"),
@@ -163,11 +193,17 @@ def load_config(config_path: Optional[Path] = None) -> AppConfig:
                 "tts_rate",
                 "min_speech_frames",
                 "tail_padding_ms",
+                "noise_gate_threshold",
+                "speech_filter_highpass_hz",
+                "speech_filter_lowpass_hz",
+                "vosk_max_alternatives",
+                "wake_vad_level",
+                "wake_match_window_ms",
             }:
                 config_data[config_key] = int(value)
             elif config_key in {"frame_sample_fps", "center_crop_ratio", "wake_sensitivity", "porcupine_sensitivity"}:
                 config_data[config_key] = float(value)
-            elif config_key == "prefer_porcupine":
+            elif config_key in {"prefer_porcupine", "apply_noise_gate", "apply_speech_filter", "resample_on_mismatch"}:
                 config_data[config_key] = value.lower() in ("true", "1", "yes")
             elif config_key == "wake_variants":
                 config_data[config_key] = [variant.strip() for variant in value.split(",") if variant.strip()]

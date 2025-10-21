@@ -231,6 +231,7 @@ class SessionController:
                 rate=sample_rate,
                 chunk_samples=chunk_samples,
                 input_device_name=self.config.mic_device_name,
+                resample_on_mismatch=self.config.resample_on_mismatch,
             ) as mic:
                 while time.monotonic() < deadline:
                     if self._cancel_flag:

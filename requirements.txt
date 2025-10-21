@@ -6,9 +6,15 @@ pyttsx3
 together==1.2.0
 opencv-python
 numpy
+librosa
+noisereduce
+soundfile
+scipy
 python-dotenv
 requests
 pytest
 pvporcupine
 elevenlabs
 tenacity
+rapidfuzz>=3.0.0
+pillow

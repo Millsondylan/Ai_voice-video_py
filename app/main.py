@@ -31,8 +31,20 @@ def build_transcribers(config: AppConfig) -> tuple[StreamingTranscriber, Streami
         raise RuntimeError("Set VOSK_MODEL_PATH or provide 'vosk_model_path' in the config.")
 
     model = Model(model_path)
-    wake_transcriber = StreamingTranscriber(sample_rate=config.sample_rate_hz, model=model)
-    segment_transcriber = StreamingTranscriber(sample_rate=config.sample_rate_hz, model=model)
+    wake_transcriber = StreamingTranscriber(
+        sample_rate=config.sample_rate_hz,
+        model=model,
+        enable_words=True,
+        max_alternatives=config.vosk_max_alternatives,
+        noise_gate_threshold=config.noise_gate_threshold,
+    )
+    segment_transcriber = StreamingTranscriber(
+        sample_rate=config.sample_rate_hz,
+        model=model,
+        enable_words=True,
+        max_alternatives=config.vosk_max_alternatives,
+        noise_gate_threshold=config.noise_gate_threshold,
+    )
     return wake_transcriber, segment_transcriber
 
 
