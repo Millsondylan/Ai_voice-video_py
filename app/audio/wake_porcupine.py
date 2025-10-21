@@ -179,9 +179,10 @@ class PorcupineWakeListener(threading.Thread):
                 self._active_mic = None
 
         except Exception as exc:  # pragma: no cover
-            print(f"[PorcupineWakeListener] error: {exc}")
-            import traceback
-            traceback.print_exc()
+            logger = get_event_logger()
+            logger.log_event('wake_listener_error', {'error': str(exc)})
+            import logging
+            logging.exception("PorcupineWakeListener error")
         finally:
             # Clean up Porcupine
             if self._porcupine:
