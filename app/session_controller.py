@@ -65,6 +65,7 @@ class SessionController:
 
         self.config.session_root.mkdir(parents=True, exist_ok=True)
 
+        # Get loggers and store them for use throughout the function
         event_logger = get_event_logger()
         structured_logger = get_structured_logger()
         previous_log_path = structured_logger.output_path
@@ -183,7 +184,7 @@ class SessionController:
             callbacks.on_session_complete(session_id)
             structured_logger.reset()
             structured_logger.set_output_path(previous_log_path)
-            event_logger.reset()
+            get_event_logger().reset()  # Get logger explicitly in finally block
             self._callbacks = None
 
     # ------------------------------------------------------------------ helpers

@@ -7,7 +7,7 @@ import collections
 import time
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import List, Optional
+from typing import Any, Callable, Dict, List, Optional
 
 from app.audio.capture import run_segment
 from app.audio.mic import MicrophoneStream
@@ -69,7 +69,7 @@ class ConversationMode:
         config: AppConfig,
         transcriber: StreamingTranscriber,
         tts: SpeechSynthesizer,
-        on_turn_complete: callable,
+        on_turn_complete: Callable[[str, str, Any], Dict[str, Any]],
     ):
         self.config = config
         self.transcriber = transcriber
@@ -165,10 +165,13 @@ class ConversationMode:
             result = self._capture_with_buffer(mic)
 
             if result and result.clean_transcript:
+                # FIX: Return actual audio bytes and frames from capture result
+                # This ensures conversation mode has access to the same data as regular mode
                 return {
                     'transcript': result.clean_transcript,
-                    'audio_path': None,  # TODO: Save audio
-                    'frames': [],  # TODO: Include video frames
+                    'audio_bytes': result.audio_bytes,
+                    'audio_path': None,  # Audio is in memory, not saved to file in conversation mode
+                    'frames': [],  # Video frames not captured in conversation mode (audio-only)
                     'stop_reason': result.stop_reason
                 }
             return None
@@ -180,17 +183,17 @@ class ConversationMode:
         """Capture audio using the continuous buffer for pre-roll."""
         from app.audio.capture import run_segment
 
-        # The continuous buffer already has the pre-roll
-        # Just need to feed it to the segment recorder
-        # For now, use standard run_segment
-        # TODO: Modify to use continuous_buffer
+        # FIX: Pass the continuous buffer as pre-roll to ensure first syllables are captured
+        # The continuous buffer contains audio frames from before the user started speaking
+        pre_roll_buffer = list(self.continuous_buffer) if self.continuous_buffer else None
 
         return run_segment(
             mic=mic,
             stt=self.transcriber,
             config=self.config,
             stop_event=None,
-            on_chunk=None
+            on_chunk=None,
+            pre_roll_buffer=pre_roll_buffer,
         )
 
     def _should_exit(self, text: str) -> bool:

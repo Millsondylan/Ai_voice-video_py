@@ -37,6 +37,8 @@ class StreamingTranscriber:
         if not model_path and model is None:
             raise RuntimeError("VOSK_MODEL_PATH environment variable or config must be set")
         if model is None:
+            if model_path is None:
+                raise RuntimeError("VOSK_MODEL_PATH must be set when model is not provided")
             if not os.path.isdir(model_path):
                 raise RuntimeError(f"Vosk model directory not found: {model_path}")
             self.model = Model(model_path)

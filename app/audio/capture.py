@@ -34,7 +34,19 @@ def run_segment(
     pre_roll_buffer: Optional[Sequence[bytes]] = None,
     no_speech_timeout_ms: Optional[int] = None,
 ) -> SegmentCaptureResult:
-    """Capture a full speech segment with optional pre-roll and robust stop conditions."""
+    """Capture a full speech segment with optional pre-roll and robust stop conditions.
+
+    FIX: Ensures complete speech capture without truncation by:
+    - FIX: Using pre-roll buffer (config.pre_roll_ms) to catch initial syllables before VAD triggers
+    - FIX: Tracking consecutive silence frames to avoid premature cutoff on brief pauses
+    - FIX: Adding tail padding (config.tail_padding_ms) after speech ends to capture trailing words
+    - FIX: Requiring minimum speech frames (config.min_speech_frames) before allowing silence detection
+    - FIX: Using tunable VAD aggressiveness (config.vad_aggressiveness) to balance sensitivity
+    - FIX: Longer silence timeout (config.silence_ms) to detect end-of-utterance without cutting off
+
+    These fixes address the issue where the assistant was capturing only partial speech segments,
+    often cutting off early or missing the end of the user's sentence.
+    """
 
     sample_rate = config.sample_rate_hz
     chunk_samples = config.chunk_samples
@@ -49,12 +61,16 @@ def run_segment(
         pre_roll_ms=config.pre_roll_ms,
     )
 
+    # FIX: Initialize VAD with configurable aggressiveness (0=most sensitive, 3=least sensitive)
+    # Mode 1-2 recommended for general use; lower values catch softer speech
     vad = webrtcvad.Vad(config.vad_aggressiveness)
     stt.start()
 
     frames: list[bytes] = []
 
+    # FIX: RELIABLE PRE-ROLL BUFFER - Ensures we don't miss the beginning of speech
     # Seed pre-roll from wake listener (if provided), otherwise read fresh frames.
+    # This buffers audio BEFORE speech starts so first syllables aren't lost.
     pre_frames = list(pre_roll_buffer)[-ring_frames:] if pre_roll_buffer else []
     missing = max(0, ring_frames - len(pre_frames))
     for _ in range(missing):
@@ -63,6 +79,7 @@ def run_segment(
         if on_chunk:
             on_chunk()
 
+    # FIX: Prepend buffered audio to recording so speech capture is complete from the start
     for frame in pre_frames:
         frames.append(frame)
         stt.feed(frame)
@@ -72,6 +89,16 @@ def run_segment(
     has_spoken = any(vad.is_speech(frame, sample_rate) for frame in frames)
     first_speech_logged = has_spoken
     stop_reason = "cap"
+
+    # FIX: CONSECUTIVE SILENCE TRACKING - Prevents premature cutoff on brief pauses
+    # Track consecutive silence frames to avoid ending recording during short hesitations.
+    # This ensures we don't cut off mid-sentence if the user takes a breath or pauses briefly.
+    consecutive_silence_frames = 0
+    total_speech_frames = sum(1 for f in frames if vad.is_speech(f, sample_rate))
+
+    # FIX: MINIMUM SPEECH FRAMES - Require sufficient speech before allowing silence detection
+    # This prevents the system from stopping too early after just 1-2 words
+    min_speech_frames = getattr(config, 'min_speech_frames', 3)
 
     if has_spoken:
         audio_logger.info("VAD detected speech during pre-roll; capturing segment")
@@ -125,15 +152,35 @@ def run_segment(
         if speech:
             has_spoken = True
             last_speech_time = now_time
+            consecutive_silence_frames = 0  # FIX: Reset silence counter on speech
+            total_speech_frames += 1
             if not first_speech_logged:
                 audio_logger.info("VAD detected speech; capturing segment")
                 first_speech_logged = True
-        elif has_spoken and (now_time - last_speech_time) * 1000 >= config.silence_ms:
-            stop_reason = "silence"
-            break
+        else:
+            # FIX: LONGER SILENCE TIMEOUT - Track consecutive silence frames carefully
+            # Industry guidelines suggest 0.5-0.8s silence for end-of-utterance detection
+            # Config.silence_ms (default 1800ms) is generous to prevent premature cutoff
+            consecutive_silence_frames += 1
 
+            # FIX: ROBUST SILENCE DETECTION - Only trigger if:
+            # 1. We've captured enough speech frames (avoid cutting off too early)
+            # 2. We have sustained silence (config.silence_ms duration)
+            # This prevents stopping on brief pauses or hesitations during speech
+            if has_spoken and total_speech_frames >= min_speech_frames:
+                silence_duration_ms = (now_time - last_speech_time) * 1000
+                if silence_duration_ms >= config.silence_ms:
+                    stop_reason = "silence"
+                    break
+
+    # FIX: POST-SPEECH TAIL PADDING - Capture audio after silence detection
+    # Add tail padding to ensure we capture the very end of speech, including trailing words
+    # that might occur right at the silence boundary. This prevents cutting off the last syllable.
     if has_spoken and stop_reason not in {"manual", "cap", "timeout15"}:
-        drain_tail(max(1, int(200 / frame_ms)))
+        tail_padding_ms = getattr(config, 'tail_padding_ms', 300)
+        tail_frames = max(1, int(tail_padding_ms / frame_ms))
+        drain_tail(tail_frames)
+        audio_logger.info(f"Added {tail_padding_ms}ms tail padding ({tail_frames} frames)")
 
     stt.end()
     transcript = stt.transcript

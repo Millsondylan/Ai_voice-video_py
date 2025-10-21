@@ -4,7 +4,7 @@ import collections
 import threading
 import time
 import uuid
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from enum import Enum
 from typing import Callable, Dict, List, Optional, Sequence
 
@@ -16,7 +16,8 @@ from app.audio.tts import SpeechSynthesizer
 from app.route import route_and_respond
 from app.segment import SegmentRecorder, SegmentResult
 from app.util.config import AppConfig
-from app.util.diagnostics import SessionDiagnostics, TurnContext
+from app.util.diagnostics import SessionDiagnostics
+from app.util.log import get_event_logger
 
 
 class SessionState(Enum):
@@ -48,7 +49,16 @@ class SessionCallbacks:
 
 
 class SessionManager:
-    """Finite state manager orchestrating the multi-turn voice session."""
+    """Finite state manager orchestrating the multi-turn voice session.
+
+    FIX: MULTI-TURN CONVERSATION SUPPORT - This class manages complete conversation
+    sessions with proper lifecycle handling:
+    - Maintains conversation history across multiple turns (self._history)
+    - Continues listening after each assistant response (no need to re-wake)
+    - Only terminates on explicit "bye glasses" or 15-second timeout (followup_timeout_ms)
+    - Returns to wake-listening state when session ends
+    - Properly handles voice reply flow with mic muting during TTS
+    """
 
     def __init__(
         self,
@@ -57,7 +67,7 @@ class SessionManager:
         vlm_client: VLMClient,
         tts: SpeechSynthesizer,
         diagnostics: Optional[SessionDiagnostics] = None,
-        followup_timeout_ms: int = 15_000,
+        followup_timeout_ms: int = 15_000,  # FIX: 15-second timeout for follow-up
     ) -> None:
         self.config = config
         self.segment_recorder = segment_recorder
@@ -98,25 +108,29 @@ class SessionManager:
         self._running = True
         self._cancel_event.clear()
         self._turns.clear()
+        # FIX: CONVERSATION HISTORY - Maintained across all turns in this session
         self._history.clear()
         self._history_tokens = 0
+
+        turn_index = 0
+        end_reason = "unknown"
 
         try:
             self._session_start_monotonic = time.monotonic()
             self._session_id = self.diagnostics.start_session()
             callbacks.session_started(self._session_id)
 
-            turn_index = 0
             next_pre_roll = list(pre_roll_buffer) if pre_roll_buffer else None
-            no_speech_timeout = None
-            end_reason = "unknown"
+            next_timeout_ms: Optional[int] = None
 
+            # FIX: MULTI-TURN CONVERSATION LOOP - Continues until timeout or explicit exit
+            # This loop handles multiple question-answer exchanges in a single session
             while not self._cancel_event.is_set():
                 segment_result = self._capture_turn(
                     turn_index,
                     callbacks,
                     pre_roll_buffer=next_pre_roll,
-                    no_speech_timeout_ms=no_speech_timeout,
+                    no_speech_timeout_ms=next_timeout_ms,
                 )
 
                 if segment_result is None:
@@ -128,6 +142,7 @@ class SessionManager:
 
                 callbacks.transcript_ready(turn_index, segment_result)
 
+                # FIX: LIFECYCLE MANAGEMENT - 15-second timeout termination
                 if stop_reason == "timeout15" and not user_text:
                     end_reason = "timeout15"
                     break
@@ -136,6 +151,7 @@ class SessionManager:
                     end_reason = "manual"
                     break
 
+                # FIX: LIFECYCLE MANAGEMENT - Explicit "bye glasses" termination
                 user_requested_exit = stop_reason == "bye" or "bye glasses" in user_text.lower()
 
                 assistant_payload: Dict[str, object]
@@ -186,6 +202,7 @@ class SessionManager:
                     )
                 )
 
+                # FIX: LIFECYCLE MANAGEMENT - Exit on user bye command
                 if user_requested_exit:
                     end_reason = "bye"
                     break
@@ -194,8 +211,18 @@ class SessionManager:
                     end_reason = stop_reason
                     break
 
-                next_pre_roll = None
-                no_speech_timeout = self.followup_timeout_ms
+                # FIX: AWAIT FOLLOW-UP - After assistant speaks, wait for user's next input
+                # This enables multi-turn conversation without requiring a new wake word
+                next_timeout_ms = None
+                follow_reason, next_pre_roll = self._await_followup(callbacks)
+                if follow_reason != "speech":
+                    # User didn't respond within timeout or error occurred
+                    end_reason = follow_reason
+                    break
+
+                # FIX: CONTINUE CONVERSATION - User is speaking again, process next turn
+                # Set timeout for subsequent turns (15 seconds of silence will end session)
+                next_timeout_ms = self.followup_timeout_ms
                 turn_index += 1
 
             if end_reason == "unknown":
@@ -230,6 +257,7 @@ class SessionManager:
         if self._cancel_event.is_set():
             return None
 
+        get_event_logger().set_turn(turn_index)
         self._transition_state(SessionState.RECORDING, turn_index, callbacks)
         self.diagnostics.start_turn(SessionState.RECORDING.value)
         self.diagnostics.timeline_event("Recording started")
@@ -294,6 +322,62 @@ class SessionManager:
             self._transition_state(SessionState.AWAIT_FOLLOWUP, turn_index, callbacks)
             self.diagnostics.timeline_event("Awaiting follow-up")
 
+    def _await_followup(
+        self,
+        callbacks: SessionCallbacks,
+    ) -> tuple[str, Optional[List[bytes]]]:
+        """Wait for user to speak again after assistant's response.
+
+        FIX: 15-SECOND FOLLOW-UP TIMEOUT - This method waits up to 15 seconds
+        (self.followup_timeout_ms) for the user to continue the conversation.
+        If speech is detected, returns pre-roll buffer and continues session.
+        If timeout expires with no speech, returns "timeout15" to end session.
+        This enables multi-turn conversations without requiring a new wake word.
+        """
+        if self._cancel_event.is_set():
+            return "cancel", None
+
+        vad = webrtcvad.Vad(max(0, min(3, self.config.vad_aggressiveness)))
+        chunk_samples = self.config.chunk_samples
+        sample_rate = self.config.sample_rate_hz
+        frame_ms = max(1, int((chunk_samples / sample_rate) * 1000))
+        ring = collections.deque(maxlen=max(1, int(self.config.pre_roll_ms / frame_ms)))
+        # FIX: Cooldown period to avoid detecting assistant's own voice as follow-up
+        cooldown_end = time.monotonic() + 0.35
+        # FIX: 15-second deadline for follow-up speech
+        deadline = time.monotonic() + self.followup_timeout_ms / 1000
+
+        try:
+            with MicrophoneStream(
+                rate=sample_rate,
+                chunk_samples=chunk_samples,
+                input_device_name=self.config.mic_device_name,
+            ) as mic:
+                while time.monotonic() < deadline:
+                    if self._cancel_event.is_set():
+                        return "cancel", None
+
+                    frame = mic.read(chunk_samples)
+                    ring.append(frame)
+
+                    if time.monotonic() < cooldown_end:
+                        continue
+
+                    if vad.is_speech(frame, sample_rate):
+                        pre_frames: List[bytes] = list(ring)
+                        tail_frames = max(1, int(200 / frame_ms))
+                        for _ in range(tail_frames):
+                            pre_frames.append(mic.read(chunk_samples))
+                        self.diagnostics.timeline_event("Follow-up speech detected")
+                        return "speech", pre_frames
+
+                self.diagnostics.timeline_event("Follow-up timeout (15s)")
+                return "timeout15", None
+        except Exception as exc:
+            callbacks.error(str(exc))
+            self.diagnostics.timeline_event(f"Follow-up wait error: {exc}")
+            return "error", None
+
     def _transition_state(
         self,
         state: SessionState,
@@ -302,6 +386,7 @@ class SessionManager:
     ) -> None:
         self._state = state
         self.diagnostics.update_state(state.value)
+        get_event_logger().set_state(state.value)
         callbacks.state_changed(state, turn_index)
 
     def _build_model_input(self, latest_user: str) -> Dict[str, object]:

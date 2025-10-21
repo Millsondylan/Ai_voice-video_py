@@ -59,7 +59,6 @@ class SegmentRecorder:
         audio_path = Path(temp_dir) / "audio.wav"
 
         self._stop_event.clear()
-        get_event_logger().reset()
 
         # Open microphone and video capture
         with MicrophoneStream(

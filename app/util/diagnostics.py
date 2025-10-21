@@ -137,6 +137,7 @@ class SessionDiagnostics:
     def update_history_tokens(self, token_count: int) -> None:
         self._history_tokens = token_count
         self._structured.update_state(history_tokens=token_count)
+        get_event_logger().set_history_tokens(token_count)
 
     # ----------------------------------------------------------------- artifacts
     def record_audio(self, audio_bytes: bytes) -> None:

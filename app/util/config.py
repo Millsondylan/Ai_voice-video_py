@@ -28,6 +28,13 @@ DEFAULT_CONFIG: Dict[str, Any] = {
     "wake_sensitivity": 0.65,
     "tts_voice": None,
     "tts_rate": 175,
+    # Porcupine wake word detection (optional, falls back to Vosk)
+    "prefer_porcupine": True,
+    "porcupine_sensitivity": 0.65,
+    "porcupine_keyword_path": None,
+    # Advanced speech capture settings for complete word capture
+    "min_speech_frames": 5,        # Minimum speech frames before allowing silence cutoff
+    "tail_padding_ms": 400,        # Extra audio to capture after speech ends
 }
 
 
@@ -60,6 +67,14 @@ class AppConfig:
     wake_sensitivity: float = DEFAULT_CONFIG["wake_sensitivity"]
     tts_voice: Optional[str] = DEFAULT_CONFIG["tts_voice"]
     tts_rate: int = DEFAULT_CONFIG["tts_rate"]
+    # Porcupine wake word detection (primary method with Vosk fallback)
+    prefer_porcupine: bool = DEFAULT_CONFIG["prefer_porcupine"]
+    porcupine_access_key: Optional[str] = field(default_factory=lambda: os.getenv("PORCUPINE_ACCESS_KEY"))
+    porcupine_sensitivity: float = DEFAULT_CONFIG["porcupine_sensitivity"]
+    porcupine_keyword_path: Optional[str] = DEFAULT_CONFIG["porcupine_keyword_path"]
+    # Advanced speech capture settings for complete word capture
+    min_speech_frames: int = DEFAULT_CONFIG["min_speech_frames"]
+    tail_padding_ms: int = DEFAULT_CONFIG["tail_padding_ms"]
 
     def to_dict(self) -> Dict[str, Any]:
         """Return a JSON serializable dict representation."""
@@ -127,6 +142,12 @@ def load_config(config_path: Optional[Path] = None) -> AppConfig:
         ("GLASSES_WAKE_SENSITIVITY", "wake_sensitivity"),
         ("GLASSES_TTS_VOICE", "tts_voice"),
         ("GLASSES_TTS_RATE", "tts_rate"),
+        ("GLASSES_PREFER_PORCUPINE", "prefer_porcupine"),
+        ("PORCUPINE_ACCESS_KEY", "porcupine_access_key"),
+        ("GLASSES_PORCUPINE_SENSITIVITY", "porcupine_sensitivity"),
+        ("GLASSES_PORCUPINE_KEYWORD_PATH", "porcupine_keyword_path"),
+        ("GLASSES_MIN_SPEECH_FRAMES", "min_speech_frames"),
+        ("GLASSES_TAIL_PADDING_MS", "tail_padding_ms"),
     ]:
         value = os.getenv(env_key)
         if value is not None:
@@ -140,10 +161,14 @@ def load_config(config_path: Optional[Path] = None) -> AppConfig:
                 "vad_aggressiveness",
                 "pre_roll_ms",
                 "tts_rate",
+                "min_speech_frames",
+                "tail_padding_ms",
             }:
                 config_data[config_key] = int(value)
-            elif config_key in {"frame_sample_fps", "center_crop_ratio", "wake_sensitivity"}:
+            elif config_key in {"frame_sample_fps", "center_crop_ratio", "wake_sensitivity", "porcupine_sensitivity"}:
                 config_data[config_key] = float(value)
+            elif config_key == "prefer_porcupine":
+                config_data[config_key] = value.lower() in ("true", "1", "yes")
             elif config_key == "wake_variants":
                 config_data[config_key] = [variant.strip() for variant in value.split(",") if variant.strip()]
             else:
