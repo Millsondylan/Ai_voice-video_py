@@ -251,6 +251,19 @@ class AudioEventLogger:
         logger.info("Wake word detected")
         self._structured.log("wake.detected_at", {"wake_detected_ms": self._wake_detected_at})
 
+    def log_wake_progress(self, phrase: str, hits: int, required_hits: int, window_ms: int) -> None:
+        """Record a partial wake match to aid debugging missed triggers."""
+        logger.debug("Wake candidate '%s' hits=%d/%d", phrase, hits, required_hits)
+        self._structured.log(
+            "wake.partial_hit",
+            {
+                "phrase": phrase,
+                "hits": hits,
+                "required_hits": required_hits,
+                "window_ms": window_ms,
+            },
+        )
+
     def log_segment_start(
         self,
         *,
